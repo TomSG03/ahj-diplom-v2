@@ -1,0 +1,56 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - checkout
+      - node/install-packages:
+          # If you are using yarn, change the line below from "npm" to "yarn"
+          pkg-manager: yarn
+      - run:
+          name: Run build
+          command: yarn build
+      - run:
+          name: Run eslint
+          command: yarn lint
+      # - run:
+      #     name: Run test 
+      #     command: yarn test
+      # - run:
+      #     name: Create gh-pages
+      #     command: |
+      #       git subtree split --prefix dist -b gh-pages
+      #       git push -f https://${GIT_TOKEN}@github.com/TomSG03/ahj-env2.git gh-pages:gh-pages
+
+      #       git config --global credential.helper store
+      #       git config --global user.name CircleCI
+      #       git config --global user.email ci@circleci.com
+      #       git checkout -b gh-pages
+      #       git rm *.*
+      #       git add dist -f
+      #       git commit -m "dist commit"
+      #       git push -f https://${GIT_TOKEN}@github.com/TomSG03/ahj-env2.git gh-pages
+      # # - run:
+      #     name: echo
+      #     command: echo "https://$GIT_TOKEN:x-oauth-basic@github.com" > "$HOME/.git-credentials"
+      # - run:
+      #     name: push-dir
+      #     command: yarn deploy
+      # - run: git add dist -f
+      # - run: git commit -m "Initial dist subtree commit"  
+      # - run: git subtree push --prefix dist https://${GIT_TOKEN}@github.com/TomSG03/ahj-env2.git gh-pages
+      # - run: git subtree push --prefix dist origin gh-pages 
+      
+workflows:
+  sample:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only: main
+

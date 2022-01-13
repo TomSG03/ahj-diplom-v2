@@ -1,0 +1,87 @@
+:root {
+  --win-width: 500px;
+}
+
+
+.windowAsk-wrapper {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.window-ask {
+  position: fixed;
+  width: var(--win-width);
+  border: solid 1px gray;
+  border-radius: 10px;
+  left: calc( 50% - 250px );
+  top: 100px;
+  background-color: #fff;
+}
+
+.head-ask {
+  text-align: center;
+  margin: 20px 20px;  
+}
+
+.body-ask {
+  text-align: left;
+  margin: 20px 20px;
+}
+
+
+.input-ask-block {
+  margin: 20px;
+}
+
+.input-ask {
+  padding: 5px;
+  font-size: 1.2rem;
+  width: 100%;
+  font-family: "PT Sans", Calibri, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.textarea-ask {
+  resize: vertical;
+  max-height: 200px;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.btn-ask {
+  text-align: right;
+  margin: 20px;
+}
+
+.btnCancel {
+  padding: 10px 15px;
+  background-color: #fff;
+  border: solid 1px gray;
+  border-radius: 10px;
+  font-size: 1.1rem;
+}
+
+.btnOk {
+  padding: 10px 20px;
+  margin-right: 20px;
+  background-color: #fff;
+  border: solid 1px gray;
+  border-radius: 10px;
+  font-size: 1.1rem;
+}
+
+.menu-upload {
+  white-space: nowrap;
+  z-index: 1000;
+  position: absolute;
+  background-color: #2a2f32;
+  border-radius: 5px;
+  border: 1px solid #2a2f32;
+  padding: 2px;
+  visibility: visible;
+}
