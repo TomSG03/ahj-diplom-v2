@@ -2,7 +2,6 @@
   --win-width: 500px;
 }
 
-
 .windowAsk-wrapper {
   left: 0;
   top: 0;
@@ -11,16 +10,18 @@
   position: fixed;
   top: 0;
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 6000;
 }
 
 .window-ask {
   position: fixed;
   width: var(--win-width);
-  border: solid 1px gray;
+  border: solid 1px #2a2f32;
   border-radius: 10px;
   left: calc( 50% - 250px );
   top: 100px;
-  background-color: #fff;
+  background-color: #2a2f32;
+  font-size: 1.1rem;
 }
 
 .head-ask {
@@ -44,6 +45,14 @@
   width: 100%;
   font-family: "PT Sans", Calibri, Helvetica, Arial, sans-serif;
   box-sizing: border-box;
+  background-color: #33383b;
+  border: 1px solid #33383b;
+  border-radius: 8px;
+  color: #b1b3b5;
+}
+
+.input-err {
+  visibility: hidden;
 }
 
 .textarea-ask {
@@ -60,24 +69,28 @@
 
 .btnCancel {
   padding: 10px 15px;
-  background-color: #fff;
   border: solid 1px gray;
   border-radius: 10px;
   font-size: 1.1rem;
+  background-color: #33383b;
+  border: solid 1px #33383b;
+  color: #b1b3b5;
 }
 
 .btnOk {
   padding: 10px 20px;
   margin-right: 20px;
-  background-color: #fff;
   border: solid 1px gray;
   border-radius: 10px;
   font-size: 1.1rem;
+  background-color: #33383b;
+  border: solid 1px #33383b;
+  color: #b1b3b5;
 }
 
 .menu-upload {
   white-space: nowrap;
-  z-index: 1000;
+  z-index: 9000;
   position: absolute;
   background-color: #2a2f32;
   border-radius: 5px;

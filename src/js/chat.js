@@ -17,11 +17,18 @@ export default class Chat {
     this.popupAction = this.popupAction.bind(this);
     this.optionAction = this.optionAction.bind(this);
 
+    this.geoOk = this.geoOk.bind(this);
+    this.geoError = this.geoError.bind(this);
+
+    this.preShowPost = this.preShowPost.bind(this);
+
     this.eventDomElt = this.eventDomElt.bind(this);
 
     this.option = null;
     this.upload = null;
     this.popup = null;
+    this.geo = false;
+    this.location = '';
   }
 
   begin() {
@@ -35,7 +42,7 @@ export default class Chat {
 
     this.domElmt.addEventListener('drop', (e) => {
       e.preventDefault();
-      this.link.sendData(e.dataTransfer.files, Data.getTime());
+      this.link.sendData(e.dataTransfer.files, Data.getTime(), this.location);
     });
 
     // Текстовый ввод
@@ -50,7 +57,7 @@ export default class Chat {
           this.message.type = 'text';
           this.message.content = ask.value;
         }
-        this.link.sendMsg(this.message, Data.getTime());
+        this.link.sendMsg(this.message, Data.getTime(), this.location);
         ask.value = '';
         e.preventDefault();
       }
@@ -99,8 +106,9 @@ export default class Chat {
     });
   }
 
+  // События в чате
   eventDomElt(e) {
-    // Опции
+    // Опции '⋮'
     if (e.target.closest('.menu-option') !== null && this.option === null) {
       this.optionMenu();
     } else if (this.option !== null) {
@@ -130,7 +138,8 @@ export default class Chat {
   // Меню опции '⋮'
   optionMenu() {
     const menu = [
-      { title: 'Удалить все', type: 'delete' },
+      { title: 'Геолокация', type: 'geo', state: this.geo },
+      { title: 'Удалить всё', type: 'delete' },
       { title: 'Выделить', type: 'select' },
     ];
     const position = { top: '45px', right: '0' };
@@ -145,7 +154,16 @@ export default class Chat {
   optionAction(e) {
     this.option.remove();
     this.option = null;
-    console.log(e.target);
+    // console.log(e.target);
+    switch (e.target.dataset.type) {
+      case 'geo':
+        this.geo = !this.geo;
+        this.geoLocation();
+        break;
+
+      default:
+        break;
+    }
   }
 
   // Меню скрепки
@@ -174,7 +192,7 @@ export default class Chat {
     i.accept = `${e.target.dataset.type}/*`;
     i.click();
     i.oninput = () => {
-      this.link.sendData(i.files, Data.getTime());
+      this.link.sendData(i.files, Data.getTime(), this.location);
     };
   }
 
@@ -216,5 +234,47 @@ export default class Chat {
     const arr = [...this.rows.querySelectorAll('.mess-user-body')];
     const index = arr.findIndex((el) => el.dataset.id === e);
     arr[index].closest('.row').remove();
+  }
+
+  geoLocation() {
+    if (this.geo) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.geoOk.bind(), this.geoError.bind());
+      }
+    } else this.location = '';
+  }
+
+  geoOk(pos) {
+    const { latitude, longitude } = pos.coords;
+    this.location = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+  }
+
+  geoError() {
+    const win = {
+      head: 'Что то пошло не так',
+      text: `
+        К сожалению, нам не удалось определить ваше местоположение, пожалуйста, 
+        дайте разрешение на использование геолокации, либо введите координаты вручную`,
+      input: {
+        head: 'Широта и долгота через запятую',
+        value: '',
+        error: 'Введите значение в формате 00.00, 00.00',
+      },
+      button: {
+        ok: 'OK',
+        cancel: 'Отмена',
+      },
+    };
+
+    this.gui.eventOk = this.gui.checkCoords;
+    this.gui.winModalDialog(win, this.preShowPost);
+  }
+
+  preShowPost(pos) {
+    this.gui.closeWinModal();
+    if (pos !== null) {
+      const { latitude, longitude } = pos;
+      this.location = `${latitude}, ${longitude}`;
+    } else this.geo = false;
   }
 }

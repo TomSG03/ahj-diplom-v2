@@ -24,7 +24,7 @@ export default class MenuPopup {
     const ul = document.createElement('ul');
     div.append(ul);
     for (let i = 0; i < this.item.length; i += 1) {
-      ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}</button></li>`;
+      ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title} &nbsp &nbsp &nbsp${this.item[i].state === true ? '✔' : ''}</button></li>`;
     }
     this.localDom.append(div);
   }

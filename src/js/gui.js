@@ -6,7 +6,8 @@ export default class GUI {
   constructor(host) {
     this.host = host;
     this.closeWinModal = this.closeWinModal.bind(this);
-    this.chatBody = host.querySelector('.chat-body');
+    this.eventOk = null;
+    // this.chatBody = host.querySelector('.chat-body');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -85,12 +86,12 @@ export default class GUI {
 
     this.ok = this.winModal.querySelector('.btnOk');
     if (this.ok) {
-      this.ok.addEventListener('click', this.checkCoords.bind(this, callback));
+      this.ok.addEventListener('click', this.eventOk.bind(this, callback));
     }
 
     this.cancel = this.winModal.querySelector('.btnCancel');
     if (this.cancel) {
-      this.cancel.addEventListener('click', this.closeWinModal);
+      this.cancel.addEventListener('click', this.eventCancel.bind(this, callback));
     }
   }
 
@@ -134,6 +135,11 @@ export default class GUI {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  eventCancel(callback) {
+    callback(null);
+  }
+
   closeWinModal() {
     this.winModal.remove();
   }
@@ -145,18 +151,18 @@ export default class GUI {
 
   // ---------------------------- add parts ---------------------------------
 
-  showConnect(msg) {
-    const div = document.createElement('div');
-    div.className = 'chat-msg-block';
-    div.style.justifyContent = 'center';
-    div.innerHTML = `
-      <div class="block-msg">
-        <p class"msg-body">${msg}</p>  
-      </div>
-      `;
-    this.chatBody.appendChild(div);
-    this.chatBody.scrollTop = this.chatBody.scrollHeight;
-  }
+  // showConnect(msg) {
+  //   const div = document.createElement('div');
+  //   div.className = 'chat-msg-block';
+  //   div.style.justifyContent = 'center';
+  //   div.innerHTML = `
+  //     <div class="block-msg">
+  //       <p class"msg-body">${msg}</p>
+  //     </div>
+  //     `;
+  //   this.chatBody.appendChild(div);
+  //   this.chatBody.scrollTop = this.chatBody.scrollHeight;
+  // }
 
   // eslint-disable-next-line class-methods-use-this
   createElm(obj) {
@@ -172,6 +178,9 @@ export default class GUI {
     const divTime = document.createElement('div');
     divTime.className = 'time-stp';
     divTime.innerHTML = obj.date;
+    const divGeo = document.createElement('div');
+    divGeo.className = 'time-stp';
+    divGeo.innerHTML = obj.geo;
 
     if (obj.type.match(/text/)) {
       divMess.append(obj.message);
@@ -196,6 +205,7 @@ export default class GUI {
     `;
     divElmt.append(divMenu);
     divElmt.append(divMess);
+    divElmt.append(divGeo);
     divElmt.append(divTime);
     divRow.append(divElmt);
 
@@ -229,5 +239,27 @@ export default class GUI {
     item.href = obj.message;
     item.textContent = obj.messageName;
     return item;
+  }
+
+  checkCoords(callback, e) {
+    const input = e.target.closest('.window-ask').querySelector('.input-ask');
+    const coords = this.checkValidCoords(input.value);
+    if (!coords) {
+      input.nextElementSibling.style.visibility = 'visible';
+      setTimeout(() => {
+        input.nextElementSibling.style.visibility = '';
+      }, 2000);
+      return;
+    }
+    callback(coords);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  checkValidCoords(input) {
+    const position = input.split(',').map((coord) => coord.match(/[+|−|-|—|-]?\d{1,3}\.\d+/));
+    if (!position[0] || !position[1]) {
+      return false;
+    }
+    return { latitude: position[0][0], longitude: position[1][0] };
   }
 }

@@ -60,7 +60,7 @@ nav {
 .content-row {
   min-height: min-content;
   margin-bottom: 10px;
-  z-index: 4;
+  z-index: 40;
   overflow: auto;
 }
 

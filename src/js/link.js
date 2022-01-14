@@ -3,13 +3,14 @@ export default class Link {
     this.server = server;
   }
 
-  sendMsg(obj, timeStamp) {
+  sendMsg(obj, timeStamp, location) {
     this.ws.send(JSON.stringify({
       event: 'message',
       type: obj.type,
       message: obj.content,
       date: timeStamp,
       messageName: obj.contentName,
+      geo: location,
     }));
   }
 
@@ -35,7 +36,7 @@ export default class Link {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  sendData(arrFiles = [], date) {
+  sendData(arrFiles = [], date, location) {
     const msg = {};
     for (let i = 0; i < arrFiles.length; i += 1) {
       const { type } = arrFiles[i];
@@ -45,7 +46,7 @@ export default class Link {
         msg.content = reader.result;
         msg.contentName = arrFiles[i].name;
         msg.type = type;
-        this.sendMsg(msg, date);
+        this.sendMsg(msg, date, location);
       };
     }
   }
