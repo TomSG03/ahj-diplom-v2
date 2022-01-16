@@ -1,7 +1,7 @@
 import Chat from './chat';
 
-const serverPath = 'ws://localhost:7070';
-// const serverPath = 'wss://ahj-chat.herokuapp.com/';
+// const serverPath = 'ws://localhost:7070';
+const serverPath = 'wss://ahj-diplom-be.herokuapp.com/';
 
 const domElmt = document.querySelector('main');
 

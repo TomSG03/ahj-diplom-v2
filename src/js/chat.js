@@ -2,7 +2,6 @@ import GUI from './gui';
 import Link from './link';
 import Data from './data';
 import MenuPopup from './menuPopup';
-// import WinModal from './winModal';
 import MediaRec from './mediaRec';
 import GeoLocation from './geoLocation';
 
