@@ -6,4 +6,4 @@
 
 ---
 
-## [Gh-Pages](https://tomsg03.github.io/ahj-ws-chat-fe/)
+## [Gh-Pages](https://tomsg03.github.io/ahj-diplom-v2/)
