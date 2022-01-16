@@ -1,5 +1,5 @@
 :root {
-  --win-width: 500px;
+  --win-width: 300px;
 }
 
 .windowAsk-wrapper {
@@ -10,18 +10,24 @@
   position: fixed;
   top: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 6000;
+  z-index: 200;
 }
 
 .window-ask {
-  position: fixed;
-  width: var(--win-width);
+  position: absolute;
+  min-width: var(--win-width);
+  max-width: 500px;
   border: solid 1px #2a2f32;
   border-radius: 10px;
-  left: calc( 50% - 250px );
+  /* left: calc( 50% - 250px ); */
   top: 100px;
   background-color: #2a2f32;
   font-size: 1.1rem;
+}
+
+.modal-position {
+  display: flex;
+  justify-content: center;
 }
 
 .head-ask {
@@ -90,7 +96,7 @@
 
 .menu-upload {
   white-space: nowrap;
-  z-index: 9000;
+  z-index: 10;
   position: absolute;
   background-color: #2a2f32;
   border-radius: 5px;

@@ -38,7 +38,7 @@ nav {
 }
 
 .menu-head {
-  margin: 0 10px;
+  /* margin: 0 10px; */
   cursor: pointer;
 }
 
@@ -46,8 +46,8 @@ nav {
   cursor: pointer;
 }
 
-
 .content {
+  position: relative;
   background-image: url(/src/img/events-bg-gr.jpg);
   flex-grow: 1;
   margin: 4px 0 4px 0;
@@ -60,7 +60,6 @@ nav {
 .content-row {
   min-height: min-content;
   margin-bottom: 10px;
-  z-index: 40;
   overflow: auto;
 }
 
@@ -80,13 +79,11 @@ nav {
   right: 10px;
   color: #fff;
   visibility: hidden;
-  z-index: 500;
-  /* box-shadow: 10px 1px 1px 1px rgba(34, 60, 80, 0.2); */
+  z-index: 10;
 }
 
 .element:hover .mess-menu {
   visibility: visible;
-  /* background-color: rgba(34, 60, 80, 0.2); */
 }
 
 .menu-option {
@@ -198,7 +195,7 @@ input {
 }
 
 .button {
-  margin: 0 10px;
+  margin: 0 5px;
   cursor: pointer;
   color: #828689;
   background-color: #2a2f32;
@@ -255,6 +252,8 @@ form {
   width: 100%;
 }
 
+/* --------------- mediaRec.js -----------------*/
+
 .rec-panel {
   display: flex;
   flex-wrap: nowrap;
@@ -265,7 +264,7 @@ form {
 }
 
 .rec-panel-item {
-  margin: 0 10px;
+  margin: 0 3px;
   color:#b1b3b5;
   width: 28px;
   height: 28px;
@@ -287,7 +286,51 @@ form {
 }
 
 .rec-time {
-  margin: 0 10px;
+  margin: 0 5px;
   font-size: 1.2rem;
   user-select: none;
+}
+
+/* --------------- curtain.js -----------------*/
+
+.tab-overlay {
+  height: 100%;
+  width: 0;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  background-color: rgba(0,0,0, 0.8);
+  overflow-x: hidden;
+  transition: 0.5s;
+  /* border-radius: 20px; */
+}
+
+/* .tab-overlay-content {
+  position: relative;
+  top: 25%;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+} */
+
+.tab-closebtn {
+  /* padding: 8px; */
+  font-size: 2.5rem;
+  color: #828689;
+  transition: 0.3s;
+  background-color: rgba(0,0,0, 0.8);
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.tab-overlay .tab-closebtn:hover, .tab-overlay .tab-closebtn:focus {
+  color: #f1f1f1;
+}
+
+.tab-overlay .tab-closebtn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }

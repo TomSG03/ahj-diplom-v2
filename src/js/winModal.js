@@ -15,6 +15,9 @@ export default class WinModal {
   winModalDialog(obj = {}, callback) {
     this.winModal = document.createElement('div');
     this.winModal.className = 'windowAsk-wrapper';
+    this.winModal.className = 'windowAsk-wrapper';
+    const winModalPosition = document.createElement('div');
+    winModalPosition.className = 'modal-position';
     const divWindow = document.createElement('div');
     divWindow.className = 'window-ask';
 
@@ -62,7 +65,9 @@ export default class WinModal {
 
     divWindow.innerHTML = winHTML;
 
-    this.winModal.appendChild(divWindow);
+    winModalPosition.appendChild(divWindow);
+    this.winModal.appendChild(winModalPosition);
+
     document.body.appendChild(this.winModal);
 
     const canFocus = document.querySelector('.input-ask');

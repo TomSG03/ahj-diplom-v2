@@ -93,6 +93,7 @@ export default class Chat {
 
   // Обработчики событий формы ввода
   onSubmit(e) {
+    this.tabClose();
     e.preventDefault();
     switch (this.buttonAsk.querySelector('span').dataset.type) {
       case 'text':
@@ -159,6 +160,14 @@ export default class Chat {
 
   // События в чате
   eventDomElt(e) {
+    // Запись видео
+    if (e.target.closest('.rec-video') !== null) {
+      this.tabRecVideo();
+    }
+    // Поиск
+    if (e.target.closest('.menu-find') !== null) {
+      this.tabFind();
+    }
     // Опции '⋮'
     if (e.target.closest('.menu-option') !== null && this.option === null) {
       this.optionMenu();
@@ -184,10 +193,33 @@ export default class Chat {
     if (e.target.classList.contains('mess-img') && (e.target.dataset.type.match(/image/) || e.target.dataset.type.match(/video/))) {
       e.target.classList.toggle('big-img');
     }
+    // Закрытие шторки
+    if (e.target.closest('.tab-closebtn') !== null) {
+      this.tabClose();
+    }
+  }
+
+  // Запись видео
+  tabRecVideo() {
+    this.tabFind();
+  }
+
+  // вкладка поиска
+  tabFind() {
+    this.tabOpen();
+  }
+
+  tabOpen() {
+    this.domElmt.querySelector('.tab-overlay').style.width = '100%';
+  }
+
+  tabClose() {
+    this.domElmt.querySelector('.tab-overlay').style.width = '';
   }
 
   // Меню опции '⋮'
   optionMenu() {
+    this.tabClose();
     const menu = [
       { title: 'Геолокация', type: 'geo', state: this.position.geo },
       { title: 'Избранное', type: 'favourites' },
@@ -218,6 +250,7 @@ export default class Chat {
 
   // Меню скрепки
   uploadMenu() {
+    this.tabClose();
     const menu = [
       { title: 'Картинка', type: 'image' },
       { title: 'Видео', type: 'video' },

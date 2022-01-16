@@ -35,14 +35,13 @@ export default class MediaRec {
     this.recPanel.addEventListener('click', this.eventRecPanel.bind(this));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   createRecordPanel() {
     this.form.remove();
     const divRecord = document.createElement('div');
     divRecord.className = 'rec-panel';
     const divDel = document.createElement('div');
     divDel.innerHTML = `
-      <button class="rec-panel-item" data-type="cancel" aria-label="Отменить">
+      <button class="rec-panel-item" data-type="cancel" aria-label="Отменить" width="24" height="24" >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 22">
           <path d="M5,0,3,2H0V4H16V2H13L11,0ZM15,5H1V19.5A2.5,2.5,0,0,0,3.5,22h9A2.5,2.5,0,0,0,15,19.5Z" fill="currentColor">
           </path>
@@ -51,7 +50,7 @@ export default class MediaRec {
     `;
     const divPlay = document.createElement('div');
     divPlay.innerHTML = `
-      <button class="rec-panel-item" data-type="play" aria-label="Воспроизвести">
+      <button class="rec-panel-item" data-type="play" aria-label="Воспроизвести" width="24" height="24">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 18">
           <path d="M15.05,8.39,2,.32a1,1,0,0,0-1.53.85V16.83A1,1,0,0,0,2,17.7L15,10.1A1,1,0,0,0,15.05,8.39Z" fill="currentColor">
           </path>
@@ -60,7 +59,7 @@ export default class MediaRec {
     `;
     const divStop = document.createElement('div');
     divStop.innerHTML = `
-      <button class="rec-panel-item stop-btn" data-type="stop" aria-label="Стоп">
+      <button class="rec-panel-item stop-btn" data-type="stop" aria-label="Стоп" width="24" height="24" >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
           <path fill="currentColor" d="M16,0C7.2,0,0,7.2,0,16s7.2,16,16,16s16-7.2,16-16S24.8,0,16,0z M16,30C8.3,30,2,23.7,2,16S8.3,2,16,2 s14,6.3,14,14S23.7,30,16,30z"></path><path class="_3aeL4" fill="currentColor" d="M13,11c-1.1,0-2,0.9-2,2v6c0,1.1,0.9,2,2,2h6c1.1,0,2-0.9,2-2v-6c0-1.1-0.9-2-2-2H13z">
           </path>
@@ -78,7 +77,7 @@ export default class MediaRec {
     `;
 
     const divClock = document.createElement('div');
-    divClock.textContent = '0:0';
+    divClock.textContent = '00:00';
     divClock.className = 'rec-time';
     divRecord.append(divDel);
     divRecord.append(divPlay);
@@ -186,11 +185,22 @@ export default class MediaRec {
   // Отображение времени записи
   showTime() {
     let timer = 0;
-    this.timeRec.innerText = `${timer} сек.`;
+    this.timeRec.innerText = `${this.formatTime(timer)}`;
     this.timerInterval = setInterval(() => {
-      timer += 1;
-      this.timeRec.innerText = `${timer} сек.`;
+      timer += 1000;
+      this.timeRec.innerText = `${this.formatTime(timer)}`;
     }, 1000);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  formatTime(sec) {
+    const d = new Date(sec);
+    const m = d.getMinutes();
+    const mm = m < 10 ? `0${m}` : m;
+    const s = d.getSeconds();
+    const ss = (s < 10) ? `0${s}` : s;
+    const ret = `${mm}:${ss}`;
+    return ret;
   }
 
   showError() {
@@ -205,6 +215,9 @@ export default class MediaRec {
         cancel: 'Понятно',
       },
     };
+
+    this.recPanel.remove();
+    this.domElmt.querySelector('footer .message').append(this.form);
 
     this.geoAsk = new WinModal(this.domElmt);
     this.geoAsk.winModalDialog(winItems);
