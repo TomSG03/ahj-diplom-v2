@@ -50,4 +50,16 @@ export default class Link {
       };
     }
   }
+
+  sendBlob(obj, date, location) {
+    const msg = {};
+    const reader = new FileReader();
+    reader.readAsDataURL(obj.file);
+    reader.onloadend = () => {
+      msg.content = reader.result;
+      msg.contentName = reader.name;
+      msg.type = obj.type;
+      this.sendMsg(msg, date, location);
+    };
+  }
 }

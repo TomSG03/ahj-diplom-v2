@@ -2,33 +2,34 @@ import GUI from './gui';
 import Link from './link';
 import Data from './data';
 import MenuPopup from './menuPopup';
+// import WinModal from './winModal';
+import MediaRec from './mediaRec';
+import GeoLocation from './geoLocation';
 
 export default class Chat {
   constructor(domElmt, server) {
     this.domElmt = domElmt;
     this.gui = new GUI(domElmt);
     this.link = new Link(server);
+    this.position = new GeoLocation();
+    this.media = new MediaRec(domElmt, this.link, this.position);
     this.message = {};
     this.rows = this.domElmt.querySelector('.content-row');
     this.input = this.domElmt.querySelector('.input-field');
+    this.buttonAsk = this.domElmt.querySelector('.buttonAsk');
     this.clip = this.domElmt.querySelector('.clip');
 
     this.uploadAction = this.uploadAction.bind(this);
     this.popupAction = this.popupAction.bind(this);
     this.optionAction = this.optionAction.bind(this);
 
-    this.geoOk = this.geoOk.bind(this);
-    this.geoError = this.geoError.bind(this);
-
-    this.preShowPost = this.preShowPost.bind(this);
-
     this.eventDomElt = this.eventDomElt.bind(this);
 
     this.option = null;
     this.upload = null;
     this.popup = null;
-    this.geo = false;
-    this.location = '';
+
+    this.txtFlag = '';
   }
 
   begin() {
@@ -42,27 +43,12 @@ export default class Chat {
 
     this.domElmt.addEventListener('drop', (e) => {
       e.preventDefault();
-      this.link.sendData(e.dataTransfer.files, Data.getTime(), this.location);
+      this.link.sendData(e.dataTransfer.files, Data.getTime(), this.position.location);
     });
 
     // Текстовый ввод
-    this.domElmt.querySelector('.buttonAsk').addEventListener('click', (e) => {
-      const ask = document.querySelector('.input-field');
-      if (ask.value !== '') {
-        const url = Data.findURL(ask.value);
-        if (url !== null) {
-          this.message.type = 'link';
-          this.message.content = this.link.createLink(ask.value, url);
-        } else {
-          this.message.type = 'text';
-          this.message.content = ask.value;
-        }
-        this.link.sendMsg(this.message, Data.getTime(), this.location);
-        ask.value = '';
-        e.preventDefault();
-      }
-      this.rows.scrollTop = this.rows.scrollHeight;
-    });
+    this.domElmt.querySelector('.buttonAsk').addEventListener('click', this.onSubmit.bind(this));
+    this.domElmt.querySelector('.input-field').addEventListener('input', this.onInput.bind(this));
 
     // WebSocket
     this.link.ws = new WebSocket(this.link.server);
@@ -106,6 +92,72 @@ export default class Chat {
     });
   }
 
+  // Обработчики событий формы ввода
+  onSubmit(e) {
+    e.preventDefault();
+    switch (this.buttonAsk.querySelector('span').dataset.type) {
+      case 'text':
+        if (this.input.value !== '') {
+          const url = Data.findURL(this.input.value);
+          if (url !== null) {
+            this.message.type = 'link';
+            this.message.content = this.link.createLink(this.input.value, url);
+          } else {
+            this.message.type = 'text';
+            this.message.content = this.input.value;
+          }
+          this.link.sendMsg(this.message, Data.getTime(), this.position.location);
+          this.resetForm();
+        }
+        break;
+      case 'audio':
+        this.media.audioRecord();
+        break;
+
+      default:
+        break;
+    }
+    this.rows.scrollTop = this.rows.scrollHeight;
+  }
+
+  onInput() {
+    if (this.input.value.trim() !== '' && this.txtFlag === '') {
+      this.txtFlag = 'txt';
+      this.buttonAsk.innerHTML = `
+        <span span data-type="text">
+          <svg viewBox="0 0 24 24" width="24" height="24" class="">
+            <path fill="currentColor" d="M1.101 21.757 23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z">
+            </path>
+          </svg>
+        </span>
+      `;
+    } else if (this.input.value.trim() === '' && this.txtFlag === 'txt') {
+      this.buttonAsk.innerHTML = `
+        <span span data-type="audio">
+          <svg viewBox="0 0 24 24" width="24" height="24" class="">
+            <path fill="currentColor"
+              d="M11.999 14.942c2.001 0 3.531-1.53 3.531-3.531V4.35c0-2.001-1.53-3.531-3.531-3.531S8.469 2.35 8.469 4.35v7.061c0 2.001 1.53 3.531 3.53 3.531zm6.238-3.53c0 3.531-2.942 6.002-6.237 6.002s-6.237-2.471-6.237-6.002H3.761c0 4.001 3.178 7.297 7.061 7.885v3.884h2.354v-3.884c3.884-.588 7.061-3.884 7.061-7.885h-2z">
+            </path>
+          </svg>
+        </span>
+      `;
+    }
+  }
+
+  resetForm() {
+    this.input.value = '';
+    this.txtFlag = '';
+    this.buttonAsk.innerHTML = `
+      <span span data-type="audio">
+        <svg viewBox="0 0 24 24" width="24" height="24" class="">
+          <path fill="currentColor"
+            d="M11.999 14.942c2.001 0 3.531-1.53 3.531-3.531V4.35c0-2.001-1.53-3.531-3.531-3.531S8.469 2.35 8.469 4.35v7.061c0 2.001 1.53 3.531 3.53 3.531zm6.238-3.53c0 3.531-2.942 6.002-6.237 6.002s-6.237-2.471-6.237-6.002H3.761c0 4.001 3.178 7.297 7.061 7.885v3.884h2.354v-3.884c3.884-.588 7.061-3.884 7.061-7.885h-2z">
+          </path>
+        </svg>
+      </span>
+    `;
+  }
+
   // События в чате
   eventDomElt(e) {
     // Опции '⋮'
@@ -138,9 +190,9 @@ export default class Chat {
   // Меню опции '⋮'
   optionMenu() {
     const menu = [
-      { title: 'Геолокация', type: 'geo', state: this.geo },
+      { title: 'Геолокация', type: 'geo', state: this.position.geo },
+      { title: 'Избранное', type: 'favourites' },
       { title: 'Удалить всё', type: 'delete' },
-      { title: 'Выделить', type: 'select' },
     ];
     const position = { top: '45px', right: '0' };
     const host = {
@@ -154,11 +206,10 @@ export default class Chat {
   optionAction(e) {
     this.option.remove();
     this.option = null;
-    // console.log(e.target);
     switch (e.target.dataset.type) {
       case 'geo':
-        this.geo = !this.geo;
-        this.geoLocation();
+        this.position.geo = !this.position.geo;
+        this.position.geoLocation();
         break;
 
       default:
@@ -192,7 +243,7 @@ export default class Chat {
     i.accept = `${e.target.dataset.type}/*`;
     i.click();
     i.oninput = () => {
-      this.link.sendData(i.files, Data.getTime(), this.location);
+      this.link.sendData(i.files, Data.getTime(), this.position.location);
     };
   }
 
@@ -226,55 +277,15 @@ export default class Chat {
     this.popup = null;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   popupItemRemove(e) {
     e.closest('.row').remove();
   }
 
+  // Функции WEbSocket
   deleteMessage(e) {
     const arr = [...this.rows.querySelectorAll('.mess-user-body')];
     const index = arr.findIndex((el) => el.dataset.id === e);
     arr[index].closest('.row').remove();
-  }
-
-  geoLocation() {
-    if (this.geo) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(this.geoOk.bind(), this.geoError.bind());
-      }
-    } else this.location = '';
-  }
-
-  geoOk(pos) {
-    const { latitude, longitude } = pos.coords;
-    this.location = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-  }
-
-  geoError() {
-    const win = {
-      head: 'Что то пошло не так',
-      text: `
-        К сожалению, нам не удалось определить ваше местоположение, пожалуйста, 
-        дайте разрешение на использование геолокации, либо введите координаты вручную`,
-      input: {
-        head: 'Широта и долгота через запятую',
-        value: '',
-        error: 'Введите значение в формате 00.00, 00.00',
-      },
-      button: {
-        ok: 'OK',
-        cancel: 'Отмена',
-      },
-    };
-
-    this.gui.eventOk = this.gui.checkCoords;
-    this.gui.winModalDialog(win, this.preShowPost);
-  }
-
-  preShowPost(pos) {
-    this.gui.closeWinModal();
-    if (pos !== null) {
-      const { latitude, longitude } = pos;
-      this.location = `${latitude}, ${longitude}`;
-    } else this.geo = false;
   }
 }

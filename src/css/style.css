@@ -147,6 +147,7 @@ nav {
 }
 
 .input-field {
+  position: relative;
   box-sizing: border-box;
   width: 100%;
   padding: 0 18px;
@@ -157,7 +158,14 @@ nav {
   border-color: #33383b;
   border-radius: var(--main-border-radius);
   color: #e5eaeb;
-  flex-grow: 1; 
+  flex-grow: 1;
+}
+
+.input-field::before {
+  content: 'D';
+  position: fixed;
+  top: 4px;
+  left: 4px;
 }
 
 .field:focus {
@@ -247,3 +255,39 @@ form {
   width: 100%;
 }
 
+.rec-panel {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.rec-panel-item {
+  margin: 0 10px;
+  color:#b1b3b5;
+  width: 28px;
+  height: 28px;
+  background-color: #2a2f32;
+  border: solid 1px #2a2f32;
+  cursor: pointer;
+}
+
+.send-btn {
+  width: 45px;
+  height: 45px;
+  color: #056162;;
+}
+
+.stop-btn {
+  width: 45px;
+  height: 45px;
+  color: red;
+}
+
+.rec-time {
+  margin: 0 10px;
+  font-size: 1.2rem;
+  user-select: none;
+}
