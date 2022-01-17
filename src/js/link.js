@@ -8,16 +8,18 @@ export default class Link {
       event: 'message',
       type: obj.type,
       message: obj.content,
-      date: timeStamp,
       messageName: obj.contentName,
+      favorite: 'no',
+      date: timeStamp,
       geo: location,
     }));
   }
 
-  senDelete(id) {
+  sendEvent(obj) {
     this.ws.send(JSON.stringify({
-      event: 'delete',
-      idDelete: id,
+      event: obj.event,
+      id: obj.id,
+      value: obj.value,
     }));
   }
 

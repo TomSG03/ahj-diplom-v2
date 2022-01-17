@@ -6,7 +6,7 @@ export default class MenuPopup {
     this.globalDom = objHost.global;
     this.localDom = objHost.local;
 
-    this.pressButton = this.pressButton.bind(this);
+    // this.pressButton = this.pressButton.bind(this);
   }
 
   init() {
@@ -21,16 +21,19 @@ export default class MenuPopup {
     div.style.left = this.pos.left;
     div.style.right = this.pos.right;
     div.style.bottom = this.pos.bottom;
+    div.style.width = this.pos.width;
     const ul = document.createElement('ul');
     div.append(ul);
     for (let i = 0; i < this.item.length; i += 1) {
-      ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title} &nbsp &nbsp &nbsp${this.item[i].state === true ? '✔' : ''}</button></li>`;
+      if (this.item[i].state === 'sub') {
+        ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp▼`;
+      } else ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}${this.item[i].state === true ? '&nbsp &nbsp &nbsp✔' : ''}</button></li>`;
     }
     this.localDom.append(div);
   }
 
   initEvent() {
-    this.localDom.querySelector('.menu-upload').addEventListener('click', this.pressButton.bind());
+    this.localDom.querySelector('.menu-upload').addEventListener('click', this.pressButton.bind(this));
   }
 
   remove() {

@@ -111,6 +111,11 @@ nav {
 	max-width: 100%;
 }
 
+.geo-stp {
+  color: #828689;
+  font-size: 0.8rem;
+  text-align: right;
+}
 
 .time-stp {
   color: #828689;
@@ -291,7 +296,7 @@ form {
   user-select: none;
 }
 
-/* --------------- curtain.js -----------------*/
+/* --------------- tab -----------------*/
 
 .tab-overlay {
   height: 100%;
@@ -305,6 +310,24 @@ form {
   transition: 0.5s;
   /* border-radius: 20px; */
 }
+.tab-head {
+  display: flex;
+  margin: 10px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2f32;
+  border-radius: 10px;
+}
+
+.tab-content {
+  overflow: auto;
+  margin: 20px 0px 0px 10px;
+}
+
+.tab-title {
+  font-size: 1.4rem;
+  padding-left: 10px;  
+}
 
 /* .tab-overlay-content {
   position: relative;
@@ -316,6 +339,7 @@ form {
 
 .tab-closebtn {
   /* padding: 8px; */
+  height: 44px;
   font-size: 2.5rem;
   color: #828689;
   transition: 0.3s;
@@ -330,7 +354,7 @@ form {
 }
 
 .tab-overlay .tab-closebtn {
-  position: absolute;
-  top: 5px;
-  right: 10px;
+  /* position: absolute; */
+  /* top: 3px;
+  right: 10px; */
 }

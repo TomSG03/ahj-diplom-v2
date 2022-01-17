@@ -21,11 +21,12 @@ export default class GUI {
     divMess.dataset.type = obj.type;
     divMess.style.paddingRight = '0';
     divMess.dataset.id = obj.id;
+    divMess.dataset.favorite = obj.favorite;
     const divTime = document.createElement('div');
     divTime.className = 'time-stp';
-    divTime.innerHTML = obj.date;
+    divTime.innerHTML = `${obj.favorite === 'yes' ? '★ ' : ''}${obj.date}`;
     const divGeo = document.createElement('div');
-    divGeo.className = 'time-stp';
+    divGeo.className = 'geo-stp';
     divGeo.innerHTML = obj.geo;
 
     if (obj.type.match(/text/)) {

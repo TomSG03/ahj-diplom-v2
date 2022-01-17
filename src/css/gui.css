@@ -96,7 +96,7 @@
 
 .menu-upload {
   white-space: nowrap;
-  z-index: 10;
+  z-index: 100;
   position: absolute;
   background-color: #2a2f32;
   border-radius: 5px;

@@ -4,30 +4,37 @@ import Data from './data';
 import MenuPopup from './menuPopup';
 import MediaRec from './mediaRec';
 import GeoLocation from './geoLocation';
+import WinModal from './winModal';
 
 export default class Chat {
   constructor(domElmt, server) {
     this.domElmt = domElmt;
+
     this.gui = new GUI(domElmt);
     this.link = new Link(server);
     this.position = new GeoLocation();
     this.media = new MediaRec(domElmt, this.link, this.position);
-    this.message = {};
+
     this.rows = this.domElmt.querySelector('.content-row');
+    this.tabRows = this.domElmt.querySelector('.tab-content');
+    this.tab = this.domElmt.querySelector('.tab-overlay');
+    this.tabTitle = this.domElmt.querySelector('.tab-title');
     this.input = this.domElmt.querySelector('.input-field');
     this.buttonAsk = this.domElmt.querySelector('.buttonAsk');
     this.clip = this.domElmt.querySelector('.clip');
 
-    this.uploadAction = this.uploadAction.bind(this);
-    this.popupAction = this.popupAction.bind(this);
-    this.optionAction = this.optionAction.bind(this);
-
+    // this.uploadAction = this.uploadAction.bind(this);
+    // this.popupAction = this.popupAction.bind(this);
+    // this.optionAction = this.optionAction.bind(this);
     this.eventDomElt = this.eventDomElt.bind(this);
+    // this.groupMenuAction = this.groupMenuAction.bind(this);
 
     this.option = null;
     this.upload = null;
     this.popup = null;
+    this.group = null;
 
+    this.message = {};
     this.txtFlag = '';
   }
 
@@ -56,7 +63,6 @@ export default class Chat {
         event: 'connected',
       }));
     });
-
     this.link.ws.addEventListener('message', (e) => {
       const msg = JSON.parse(e.data);
       switch (msg.event) {
@@ -72,20 +78,30 @@ export default class Chat {
           this.rows.scrollTop = this.rows.scrollHeight;
           break;
         case 'delete':
-          this.deleteMessage(msg.idDelete);
+          this.deleteMessage(msg.id);
+          break;
+        case 'deleteAll':
+          this.domElmt.querySelector('.content-row').innerHTML = '';
+          break;
+        case 'favorite':
+          this.favoriteMessage(msg);
+          break;
+        case 'favoriteAll':
+          this.tabOpen('Избранное');
+          this.tabRows.append(this.gui.createElm(msg.message));
+          this.tabRows.scrollTop = this.tabRows.scrollHeight;
+          // this.showFavorite(msg);
           break;
         default:
           break;
       }
     });
-
     this.link.ws.addEventListener('close', (e) => {
       this.gui.log(`ws close: ${e}`);
       if (e.reason) {
         this.gui.log(e);
       }
     });
-
     this.link.ws.addEventListener('error', (e) => {
       this.gui.log(`ws error: ${e}`);
     });
@@ -160,6 +176,7 @@ export default class Chat {
 
   // События в чате
   eventDomElt(e) {
+    console.log(e.target);
     // Запись видео
     if (e.target.closest('.rec-video') !== null) {
       this.tabRecVideo();
@@ -201,7 +218,7 @@ export default class Chat {
 
   // Запись видео
   tabRecVideo() {
-    this.tabFind();
+    this.tabOpen();
   }
 
   // вкладка поиска
@@ -209,11 +226,13 @@ export default class Chat {
     this.tabOpen();
   }
 
-  tabOpen() {
+  tabOpen(title) {
+    this.tabTitle.textContent = title;
     this.domElmt.querySelector('.tab-overlay').style.width = '100%';
   }
 
   tabClose() {
+    this.tabRows.innerHTML = '';
     this.domElmt.querySelector('.tab-overlay').style.width = '';
   }
 
@@ -222,30 +241,86 @@ export default class Chat {
     this.tabClose();
     const menu = [
       { title: 'Геолокация', type: 'geo', state: this.position.geo },
-      { title: 'Избранное', type: 'favourites' },
+      { title: 'Избранное', type: 'favorite' },
+      { title: 'Категории', type: 'group', state: 'sub' },
       { title: 'Удалить всё', type: 'delete' },
     ];
-    const position = { top: '45px', right: '0' };
+    const position = { top: '45px', right: '0', width: '155px' };
     const host = {
       global: this.domElmt,
       local: this.domElmt.querySelector('.menu-option'),
     };
-    this.option = new MenuPopup(menu, position, host, this.optionAction.bind());
+    this.option = new MenuPopup(menu, position, host, this.optionAction.bind(this));
     this.option.init();
   }
 
   optionAction(e) {
-    this.option.remove();
-    this.option = null;
     switch (e.target.dataset.type) {
       case 'geo':
+        this.option.remove();
+        this.option = null;
         this.position.geo = !this.position.geo;
         this.position.geoLocation();
         break;
-
+      case 'favorite':
+        this.option.remove();
+        this.option = null;
+        this.link.sendEvent({ event: 'getFavoriteAll' });
+        break;
+      case 'group':
+        this.groupMenu();
+        break;
+      case 'delete':
+        this.option.remove();
+        this.option = null;
+        this.deleteAll();
+        break;
       default:
         break;
     }
+  }
+
+  deleteAll() {
+    const winItems = {
+      head: 'Внимание',
+      text: 'Все сообщения чата будут удалены. Желаете продолжить?',
+      button: {
+        ok: 'OK',
+        cancel: 'Отмена',
+      },
+    };
+    this.deleteWin = new WinModal(this.domElmt);
+    this.deleteWin.winModalDialog(winItems, this.deleteAllOk.bind(this));
+  }
+
+  deleteAllOk() {
+    this.deleteWin.closeWinModal();
+    this.link.sendEvent({
+      event: 'deleteAll',
+    });
+  }
+
+  groupMenu() {
+    const menu = [
+      { title: 'Картинки', type: 'image', state: this.position.geo },
+      { title: 'Видео', type: 'video' },
+      { title: 'Аудио', type: 'audio' },
+      { title: 'Файлы', type: 'file' },
+      { title: 'Текст', type: 'text' },
+      { title: 'Ссылки', type: 'link' },
+    ];
+    const position = { top: '115px', right: '170px' };
+    const host = {
+      global: this.domElmt,
+      local: this.domElmt.querySelector('.menu-option'),
+    };
+    this.group1 = new MenuPopup(menu, position, host, this.groupMenuAction.bind(this));
+    this.group1.init();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  groupMenuAction() {
+    console.log('ok');
   }
 
   // Меню скрепки
@@ -262,7 +337,7 @@ export default class Chat {
       global: this.domElmt,
       local: this.domElmt.querySelector('.upload'),
     };
-    this.upload = new MenuPopup(menu, position, host, this.uploadAction.bind());
+    this.upload = new MenuPopup(menu, position, host, this.uploadAction.bind(this));
     this.upload.init();
   }
 
@@ -282,8 +357,8 @@ export default class Chat {
   // Меню элемента
   popupMenu(e) {
     const menu = [
-      { title: 'В избранное', type: 'favourite' },
-      { title: 'Закрепить', type: 'fix' },
+      { title: e.target.closest('.element').querySelector('.mess-user-body').dataset.favorite === 'yes' ? 'Удалить из избранного' : 'В избранное', type: 'favorite' },
+      // { title: 'Закрепить', type: 'fix' },
       { title: 'Удалить', type: 'delete' },
     ];
     const position = { top: '25px', right: '18px' };
@@ -291,17 +366,25 @@ export default class Chat {
       global: this.domElmt,
       local: e.target.closest('.mess-menu'),
     };
-    this.popup = new MenuPopup(menu, position, host, this.popupAction.bind());
+    this.popup = new MenuPopup(menu, position, host, this.popupAction.bind(this));
     this.popup.init();
   }
 
   popupAction(e) {
     switch (e.target.dataset.type) {
       case 'delete':
-        // this.popupItemRemove(e.target);
-        this.link.senDelete(e.target.closest('.element').querySelector('.mess-user-body').dataset.id);
+        this.link.sendEvent({
+          event: 'delete',
+          id: e.target.closest('.element').querySelector('.mess-user-body').dataset.id,
+        });
         break;
-
+      case 'favorite':
+        this.link.sendEvent({
+          event: 'favorite',
+          id: e.target.closest('.element').querySelector('.mess-user-body').dataset.id,
+          value: e.target.closest('.element').querySelector('.mess-user-body').dataset.favorite === 'no' ? 'yes' : 'no',
+        });
+        break;
       default:
         break;
     }
@@ -319,5 +402,24 @@ export default class Chat {
     const arr = [...this.rows.querySelectorAll('.mess-user-body')];
     const index = arr.findIndex((el) => el.dataset.id === e);
     arr[index].closest('.row').remove();
+  }
+
+  favoriteMessage(e) {
+    // Основное поле
+    const arr = [...this.rows.querySelectorAll('.mess-user-body')];
+    const index = arr.findIndex((el) => el.dataset.id === e.id);
+    arr[index].closest('.mess-user-body').dataset.favorite = e.value;
+    const str = arr[index].closest('.element').querySelector('.time-stp');
+    if (str.textContent[0] === '★' && e.value === 'no') {
+      str.textContent = str.textContent.slice(2, str.textContent.length);
+    } else if (str.textContent[0] !== '★' && e.value === 'yes') {
+      str.textContent = `★ ${str.textContent}`;
+    }
+    // Если вкладка tab открыта
+    if (this.tabRows.querySelector('.row') !== null) {
+      const arrTab = [...this.tabRows.querySelectorAll('.mess-user-body')];
+      const indexTab = arrTab.findIndex((el) => el.dataset.id === e.id);
+      arrTab[indexTab].closest('.row').remove();
+    }
   }
 }
