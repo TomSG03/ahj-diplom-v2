@@ -23,11 +23,7 @@ export default class Chat {
     this.buttonAsk = this.domElmt.querySelector('.buttonAsk');
     this.clip = this.domElmt.querySelector('.clip');
 
-    // this.uploadAction = this.uploadAction.bind(this);
-    // this.popupAction = this.popupAction.bind(this);
-    // this.optionAction = this.optionAction.bind(this);
     this.eventDomElt = this.eventDomElt.bind(this);
-    // this.groupMenuAction = this.groupMenuAction.bind(this);
 
     this.option = null;
     this.upload = null;
@@ -87,11 +83,13 @@ export default class Chat {
           this.favoriteMessage(msg);
           break;
         case 'favoriteAll':
-          this.tabOpen('Избранное');
           this.tabRows.append(this.gui.createElm(msg.message));
           this.tabRows.scrollTop = this.tabRows.scrollHeight;
-          // this.showFavorite(msg);
           break;
+        case 'getGroup':
+          this.showGroup(msg);
+          break;
+
         default:
           break;
       }
@@ -119,7 +117,7 @@ export default class Chat {
             this.message.type = 'link';
             this.message.content = this.link.createLink(this.input.value, url);
           } else {
-            this.message.type = 'text';
+            this.message.type = 'txt';
             this.message.content = this.input.value;
           }
           this.link.sendMsg(this.message, Data.getTime(), this.position.location);
@@ -176,7 +174,6 @@ export default class Chat {
 
   // События в чате
   eventDomElt(e) {
-    console.log(e.target);
     // Запись видео
     if (e.target.closest('.rec-video') !== null) {
       this.tabRecVideo();
@@ -188,8 +185,13 @@ export default class Chat {
     // Опции '⋮'
     if (e.target.closest('.menu-option') !== null && this.option === null) {
       this.optionMenu();
-    } else if (this.option !== null) {
+    } else if (this.option !== null && this.group === null && e.target.dataset.type !== 'submenu') {
       this.option.remove();
+      this.option = null;
+    } else if (this.option !== null && this.group !== null && e.target.dataset.type !== 'submenu') {
+      this.group.remove();
+      this.option.remove();
+      this.group = null;
       this.option = null;
     }
     // Скрепка
@@ -218,21 +220,47 @@ export default class Chat {
 
   // Запись видео
   tabRecVideo() {
-    this.tabOpen();
+    this.tabClose();
+    this.tabOpen('Запись видео', {});
   }
 
   // вкладка поиска
   tabFind() {
-    this.tabOpen();
+    this.tabClose();
+    this.tabOpen('Поиск', {});
   }
 
-  tabOpen(title) {
+  tabOpen(title, obj) {
     this.tabTitle.textContent = title;
     this.domElmt.querySelector('.tab-overlay').style.width = '100%';
+    this.tabRows.dataset.type = obj.type;
+    if (obj.type === 'tabGroup') {
+      switch (obj.name) {
+        case 'txt':
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Текстовые сообщения`;
+          break;
+        case 'link':
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Ссылки`;
+          break;
+        case 'image':
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Картинки`;
+          break;
+        case 'audio':
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Аудио файлы`;
+          break;
+        case 'video':
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Видео файлы`;
+          break;
+        default:
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Прочее`;
+          break;
+      }
+    }
   }
 
   tabClose() {
     this.tabRows.innerHTML = '';
+    this.tabRows.dataset.type = 'null';
     this.domElmt.querySelector('.tab-overlay').style.width = '';
   }
 
@@ -242,11 +270,12 @@ export default class Chat {
     const menu = [
       { title: 'Геолокация', type: 'geo', state: this.position.geo },
       { title: 'Избранное', type: 'favorite' },
-      { title: 'Категории', type: 'group', state: 'sub' },
+      { title: 'Категории', type: 'submenu', state: 'sub' },
       { title: 'Удалить всё', type: 'delete' },
     ];
     const position = { top: '45px', right: '0', width: '155px' };
     const host = {
+      name: 'options',
       global: this.domElmt,
       local: this.domElmt.querySelector('.menu-option'),
     };
@@ -257,27 +286,31 @@ export default class Chat {
   optionAction(e) {
     switch (e.target.dataset.type) {
       case 'geo':
-        this.option.remove();
-        this.option = null;
+        this.resetOption();
         this.position.geo = !this.position.geo;
         this.position.geoLocation();
         break;
       case 'favorite':
-        this.option.remove();
-        this.option = null;
+        this.resetOption();
+        this.tabOpen('Избранное', { type: 'tabFavorite' });
         this.link.sendEvent({ event: 'getFavoriteAll' });
         break;
-      case 'group':
+      case 'submenu':
         this.groupMenu();
         break;
       case 'delete':
-        this.option.remove();
-        this.option = null;
+        this.resetOption();
         this.deleteAll();
         break;
       default:
         break;
     }
+  }
+
+  resetOption() {
+    this.option.remove();
+    this.option = null;
+    this.group = null;
   }
 
   deleteAll() {
@@ -301,26 +334,37 @@ export default class Chat {
   }
 
   groupMenu() {
-    const menu = [
-      { title: 'Картинки', type: 'image', state: this.position.geo },
-      { title: 'Видео', type: 'video' },
-      { title: 'Аудио', type: 'audio' },
-      { title: 'Файлы', type: 'file' },
-      { title: 'Текст', type: 'text' },
-      { title: 'Ссылки', type: 'link' },
-    ];
-    const position = { top: '115px', right: '170px' };
-    const host = {
-      global: this.domElmt,
-      local: this.domElmt.querySelector('.menu-option'),
-    };
-    this.group1 = new MenuPopup(menu, position, host, this.groupMenuAction.bind(this));
-    this.group1.init();
+    if (this.group === null) {
+      const menu = [
+        { title: 'Картинки', type: 'image' },
+        { title: 'Видео', type: 'video' },
+        { title: 'Аудио', type: 'audio' },
+        { title: 'Текст', type: 'txt' },
+        { title: 'Ссылки', type: 'link' },
+        { title: 'Остальное', type: 'file' },
+      ];
+      const position = { top: '68px', right: '165px' };
+      const host = {
+        name: 'group',
+        global: this.domElmt,
+        local: this.domElmt.querySelector('.menu-upload'),
+      };
+      this.group = new MenuPopup(menu, position, host, this.groupMenuAction.bind(this));
+      this.group.init();
+    } else {
+      this.group.remove();
+      this.group = null;
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
-  groupMenuAction() {
-    console.log('ok');
+  groupMenuAction(e) {
+    this.group = null;
+    this.tabOpen('Категории:', { type: 'tabGroup', name: e.target.dataset.type });
+    this.link.sendEvent({
+      event: 'getGroup',
+      value: e.target.dataset.type,
+    });
   }
 
   // Меню скрепки
@@ -334,6 +378,7 @@ export default class Chat {
     ];
     const position = { top: '-160px', left: '5px' };
     const host = {
+      name: 'clip',
       global: this.domElmt,
       local: this.domElmt.querySelector('.upload'),
     };
@@ -363,6 +408,7 @@ export default class Chat {
     ];
     const position = { top: '25px', right: '18px' };
     const host = {
+      name: 'mess-item',
       global: this.domElmt,
       local: e.target.closest('.mess-menu'),
     };
@@ -399,14 +445,36 @@ export default class Chat {
 
   // Функции WEbSocket
   deleteMessage(e) {
+    // Основное поле
     const arr = [...this.rows.querySelectorAll('.mess-user-body')];
     const index = arr.findIndex((el) => el.dataset.id === e);
     arr[index].closest('.row').remove();
+    // Если вкладка tab открыта
+    if (this.tabRows.querySelector('.row') !== null) {
+      const arrTab = [...this.tabRows.querySelectorAll('.mess-user-body')];
+      const indexTab = arrTab.findIndex((el) => el.dataset.id === e);
+      arrTab[indexTab].closest('.row').remove();
+    }
   }
 
   favoriteMessage(e) {
     // Основное поле
-    const arr = [...this.rows.querySelectorAll('.mess-user-body')];
+    this.setFavorite([...this.rows.querySelectorAll('.mess-user-body')], e);
+    // Если вкладка tab открыта и это изранное
+    if (this.tabRows.querySelector('.row') !== null && this.tabRows.dataset.type === 'tabFavorite') {
+      const arrTab = [...this.tabRows.querySelectorAll('.mess-user-body')];
+      const indexTab = arrTab.findIndex((el) => el.dataset.id === e.id);
+      arrTab[indexTab].closest('.row').remove();
+    }
+    // Если вкладка tab открыта и это группа категорий
+    if (this.tabRows.querySelector('.row') !== null && this.tabRows.dataset.type === 'tabGroup') {
+      this.setFavorite([...this.tabRows.querySelectorAll('.mess-user-body')], e);
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  setFavorite(domElmt, e) {
+    const arr = domElmt;
     const index = arr.findIndex((el) => el.dataset.id === e.id);
     arr[index].closest('.mess-user-body').dataset.favorite = e.value;
     const str = arr[index].closest('.element').querySelector('.time-stp');
@@ -415,11 +483,10 @@ export default class Chat {
     } else if (str.textContent[0] !== '★' && e.value === 'yes') {
       str.textContent = `★ ${str.textContent}`;
     }
-    // Если вкладка tab открыта
-    if (this.tabRows.querySelector('.row') !== null) {
-      const arrTab = [...this.tabRows.querySelectorAll('.mess-user-body')];
-      const indexTab = arrTab.findIndex((el) => el.dataset.id === e.id);
-      arrTab[indexTab].closest('.row').remove();
-    }
+  }
+
+  showGroup(msg) {
+    this.tabRows.append(this.gui.createElm(msg.message));
+    this.tabRows.scrollTop = this.tabRows.scrollHeight;
   }
 }

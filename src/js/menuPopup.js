@@ -5,8 +5,7 @@ export default class MenuPopup {
     this.callBack = callBack;
     this.globalDom = objHost.global;
     this.localDom = objHost.local;
-
-    // this.pressButton = this.pressButton.bind(this);
+    this.name = objHost.name;
   }
 
   init() {
@@ -16,7 +15,8 @@ export default class MenuPopup {
 
   createMenu() {
     const div = document.createElement('div');
-    div.className = 'menu-upload';
+    div.className = `menu-upload ${this.name}`;
+    div.dataset.name = this.name;
     div.style.top = this.pos.top;
     div.style.left = this.pos.left;
     div.style.right = this.pos.right;
@@ -25,8 +25,8 @@ export default class MenuPopup {
     const ul = document.createElement('ul');
     div.append(ul);
     for (let i = 0; i < this.item.length; i += 1) {
-      if (this.item[i].state === 'sub') {
-        ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp▼`;
+      if (this.item[i].type === 'submenu') {
+        ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp⌵`;
       } else ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}${this.item[i].state === true ? '&nbsp &nbsp &nbsp✔' : ''}</button></li>`;
     }
     this.localDom.append(div);

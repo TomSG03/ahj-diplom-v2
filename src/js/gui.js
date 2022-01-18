@@ -29,7 +29,7 @@ export default class GUI {
     divGeo.className = 'geo-stp';
     divGeo.innerHTML = obj.geo;
 
-    if (obj.type.match(/text/)) {
+    if (obj.type.match(/txt/)) {
       divMess.append(obj.message);
     } else if (obj.type.match(/link/)) {
       divMess.innerHTML = obj.message;
