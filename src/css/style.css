@@ -127,6 +127,7 @@ nav {
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
+  overflow: visible;
 }
 
 .mess-user {
@@ -296,6 +297,22 @@ form {
   user-select: none;
 }
 
+.video-cover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px auto;
+  width: 80%;
+
+  /* min-height: 300px; */
+}
+
+.play-video {
+  max-width: 100%;
+  background-color: #33383b;
+  border-radius: 5px;
+}
+
 /* --------------- tab -----------------*/
 
 .tab-overlay {
@@ -358,3 +375,41 @@ form {
   /* top: 3px;
   right: 10px; */
 }
+
+
+/* ------------------ Scroll --------------------- */
+
+:-webkit-scrollbar-button { 
+	background-image:url('');
+	background-repeat:no-repeat;
+	width:6px;
+	height:0px
+	}
+	
+	::-webkit-scrollbar-track {
+	background-color:#b1b3b5;
+	border-radius: 5px;
+	box-shadow:0px 0px 3px #000 inset;
+	}
+	
+ ::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	background-color:#33383b;
+	box-shadow:0px 1px 1px #fff inset;
+	background-image:url('../img/scrl.png');
+	background-position:center;
+	background-repeat:no-repeat;
+	}
+	
+	::-webkit-resizer{
+	background-image:url('');
+	background-repeat:no-repeat;
+	width:7px;
+	height:0px
+	} 
+	
+::-webkit-scrollbar{
+	width: 11px;
+	} 
+	

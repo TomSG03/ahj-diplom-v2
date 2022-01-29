@@ -222,6 +222,7 @@ export default class Chat {
   tabRecVideo() {
     this.tabClose();
     this.tabOpen('Запись видео', {});
+    this.media.videoRecord();
   }
 
   // вкладка поиска
