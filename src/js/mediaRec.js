@@ -11,39 +11,12 @@ export default class MediaRec {
 
     this.tabVideo = this.domElmt.querySelector('.tab-overlay');
 
-    this.audioRecord = this.audioRecord.bind(this);
-    // this.startRecording = this.startRecording.bind(this);
     this.timerInterval = null;
   }
 
-  audioRecord() {
-    const navigatorDevices = { audio: true };
-    this.blobType = 'audio/wav';
-
-    if (!navigator.mediaDevices || !window.MediaRecorder) {
-      this.showError();
-      return;
-    }
-    try {
-      navigator.mediaDevices.getUserMedia(navigatorDevices)
-        .then((stream) => {
-          this.stream = stream;
-          this.recorder = new MediaRecorder(this.stream);
-          this.startRecording();
-        }).catch(() => this.showError());
-    } catch (error) {
-      this.showError();
-    }
-    if (this.domElmt.querySelector('.rec-panel') !== null) {
-      this.recPanel.remove();
-    }
-    this.createRecordPanel();
-    this.recPanel.addEventListener('click', this.eventRecPanel.bind(this));
-  }
-
-  videoRecord() {
-    const navigatorDevices = { audio: true, video: true };
-    this.blobType = 'video/mp4';
+  mediaRecord(type) {
+    const navigatorDevices = type === 'video/mp4' ? { audio: true, video: true } : { audio: true };
+    this.blobType = type;
 
     if (!navigator.mediaDevices || !window.MediaRecorder) {
       this.showError();
@@ -58,10 +31,12 @@ export default class MediaRec {
         .then((stream) => {
           this.stream = stream;
           this.recorder = new MediaRecorder(this.stream);
-          this.videoWindow('muted');
-          this.video = this.tabVideo.querySelector('video');
-          this.video.srcObject = stream;
-          this.video.play();
+          if (this.blobType === 'video/mp4') {
+            this.videoWindow('muted');
+            this.video = this.tabVideo.querySelector('video');
+            this.video.srcObject = stream;
+            this.video.play();
+          }
           this.startRecording();
         }).catch(() => this.showError());
     } catch (error) {
@@ -80,7 +55,7 @@ export default class MediaRec {
     divVideo.innerHTML = `
       <video ${muted === '' ? '' : 'autoplay'} class="play-video" ${muted}></video>
     `;
-    this.tabVideo.append(divVideo);
+    this.tabVideo.querySelector('.tab-content').append(divVideo);
   }
 
   createRecordPanel() {
@@ -179,9 +154,9 @@ export default class MediaRec {
           break;
         case 'record':
           if (this.blobType === 'video/mp4') {
-            this.videoRecord();
+            this.mediaRecord('video/mp4');
           } else {
-            this.audioRecord();
+            this.mediaRecord('audio/wav');
           }
           break;
         case 'play':
@@ -197,11 +172,15 @@ export default class MediaRec {
     }
   }
 
+  // Действия по завершению записи
   cancelRecording() {
     clearInterval(this.timerInterval);
     this.recPanel.remove();
     this.domElmt.querySelector('footer .message').append(this.form);
     this.tabVideo.style.width = '';
+    if (this.tabVideo.querySelector('.video-cover') !== null) {
+      this.tabVideo.querySelector('.video-cover').remove();
+    }
   }
 
   // Старт записи
@@ -253,6 +232,7 @@ export default class MediaRec {
     }
   }
 
+  // Воспроизведение видео/аудио
   playRecording() {
     if (this.recorder.state === 'inactive') {
       this.showTime();
@@ -271,18 +251,17 @@ export default class MediaRec {
     }
   }
 
+  // Отправка записи на сервер
   sendRecording() {
     if (this.recorder.state === 'inactive') {
       this.server.sendBlob({
         type: this.blobType,
         file: this.mediaFile,
       },
-        Data.getTime(),
-        this.position.location);
+      Data.getTime(),
+      this.position.location);
 
-      this.recPanel.remove();
-      this.domElmt.querySelector('footer .message').append(this.form);
-      this.tabVideo.style.width = '';
+      this.cancelRecording();
     }
   }
 
@@ -307,6 +286,7 @@ export default class MediaRec {
     return ret;
   }
 
+  // Окно с ошибкой
   showError() {
     const winItems = {
       head: 'Устройство не найденo',
@@ -320,9 +300,7 @@ export default class MediaRec {
       },
     };
 
-    this.recPanel.remove();
-    this.tabVideo.style.width = '';
-    this.domElmt.querySelector('footer .message').append(this.form);
+    this.cancelRecording();
 
     this.geoAsk = new WinModal(this.domElmt);
     this.geoAsk.winModalDialog(winItems);

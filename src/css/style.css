@@ -334,6 +334,7 @@ form {
   align-items: center;
   background-color: #2a2f32;
   border-radius: 10px;
+  height: 48px;
 }
 
 .tab-content {
@@ -344,6 +345,7 @@ form {
 .tab-title {
   font-size: 1.4rem;
   padding-left: 10px;  
+  margin-right: 10px;
 }
 
 /* .tab-overlay-content {
@@ -364,6 +366,7 @@ form {
   border: none;
   background-color: transparent;
   cursor: pointer;
+  margin: 0 5px;
 }
 
 .tab-overlay .tab-closebtn:hover, .tab-overlay .tab-closebtn:focus {

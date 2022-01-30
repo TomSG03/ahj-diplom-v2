@@ -13,9 +13,9 @@ export default class GUI {
   // eslint-disable-next-line class-methods-use-this
   createElm(obj) {
     const divRow = document.createElement('div');
-    divRow.className = 'row mess-user';
+    divRow.className = obj.source === 'user' ? 'row mess-user' : 'row mess-bot';
     const divElmt = document.createElement('div');
-    divElmt.className = 'element el-user';
+    divElmt.className = obj.source === 'user' ? 'element el-user' : 'element el-bot';
     const divMess = document.createElement('div');
     divMess.className = 'mess-user-body';
     divMess.dataset.type = obj.type;
@@ -27,10 +27,10 @@ export default class GUI {
     divTime.innerHTML = `${obj.favorite === 'yes' ? '★ ' : ''}${obj.date}`;
     const divGeo = document.createElement('div');
     divGeo.className = 'geo-stp';
-    divGeo.innerHTML = obj.geo;
+    divGeo.innerHTML = obj.geo !== '' ? `&#127758 [${obj.geo}]` : '';
 
     if (obj.type.match(/txt/)) {
-      divMess.append(obj.message);
+      divMess.innerHTML = obj.message;
     } else if (obj.type.match(/link/)) {
       divMess.innerHTML = obj.message;
     } else if (obj.type.match(/image/)) {
@@ -50,7 +50,9 @@ export default class GUI {
           </svg>
         </span>
     `;
-    divElmt.append(divMenu);
+    if (obj.source === 'user') {
+      divElmt.append(divMenu);
+    }
     divElmt.append(divMess);
     divElmt.append(divGeo);
     divElmt.append(divTime);

@@ -5,6 +5,7 @@ import MenuPopup from './menuPopup';
 import MediaRec from './mediaRec';
 import GeoLocation from './geoLocation';
 import WinModal from './winModal';
+import Search from './search';
 
 export default class Chat {
   constructor(domElmt, server) {
@@ -13,7 +14,6 @@ export default class Chat {
     this.gui = new GUI(domElmt);
     this.link = new Link(server);
     this.position = new GeoLocation();
-    this.media = new MediaRec(domElmt, this.link, this.position);
 
     this.rows = this.domElmt.querySelector('.content-row');
     this.tabRows = this.domElmt.querySelector('.tab-content');
@@ -22,6 +22,9 @@ export default class Chat {
     this.input = this.domElmt.querySelector('.input-field');
     this.buttonAsk = this.domElmt.querySelector('.buttonAsk');
     this.clip = this.domElmt.querySelector('.clip');
+
+    this.media = new MediaRec(domElmt, this.link, this.position);
+    this.searh = new Search(domElmt, this.link);
 
     this.eventDomElt = this.eventDomElt.bind(this);
 
@@ -89,6 +92,12 @@ export default class Chat {
         case 'getGroup':
           this.showGroup(msg);
           break;
+        case 'search':
+          // this.searh.searchShow(msg);
+          // this.tabRows.innerHTML = '';
+          this.tabRows.append(this.gui.createElm(msg.message));
+          this.tabRows.scrollTop = this.tabRows.scrollHeight;
+          break;
 
         default:
           break;
@@ -125,7 +134,7 @@ export default class Chat {
         }
         break;
       case 'audio':
-        this.media.audioRecord();
+        this.media.mediaRecord('audio/wav');
         break;
 
       default:
@@ -146,6 +155,7 @@ export default class Chat {
         </span>
       `;
     } else if (this.input.value.trim() === '' && this.txtFlag === 'txt') {
+      this.txtFlag = '';
       this.buttonAsk.innerHTML = `
         <span span data-type="audio">
           <svg viewBox="0 0 24 24" width="24" height="24" class="">
@@ -221,17 +231,18 @@ export default class Chat {
   // Запись видео
   tabRecVideo() {
     this.tabClose();
-    this.tabOpen('Запись видео', {});
-    this.media.videoRecord();
+    this.tabOpen('Запись видео');
+    this.media.mediaRecord('video/mp4');
   }
 
   // вкладка поиска
   tabFind() {
     this.tabClose();
-    this.tabOpen('Поиск', {});
+    this.tabOpen('Поиск');
+    this.searh.init();
   }
 
-  tabOpen(title, obj) {
+  tabOpen(title, obj = {}) {
     this.tabTitle.textContent = title;
     this.domElmt.querySelector('.tab-overlay').style.width = '100%';
     this.tabRows.dataset.type = obj.type;
@@ -260,6 +271,12 @@ export default class Chat {
   }
 
   tabClose() {
+    if (this.tab.querySelector('.video-cover') !== null) {
+      this.media.cancelRecording();
+    }
+    if (this.tab.querySelector('.input-field') !== null) {
+      this.searh.tabClear();
+    }
     this.tabRows.innerHTML = '';
     this.tabRows.dataset.type = 'null';
     this.domElmt.querySelector('.tab-overlay').style.width = '';
