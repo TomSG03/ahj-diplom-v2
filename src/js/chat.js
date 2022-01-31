@@ -93,10 +93,14 @@ export default class Chat {
           this.showGroup(msg);
           break;
         case 'search':
-          // this.searh.searchShow(msg);
-          // this.tabRows.innerHTML = '';
           this.tabRows.append(this.gui.createElm(msg.message));
           this.tabRows.scrollTop = this.tabRows.scrollHeight;
+          break;
+        case 'funcOut':
+          this.executeFunctionByName(msg.value, this, msg.id);
+          // this.executeFunctionByName(msg.value, msg.id)
+          // const tmpFunc = new Function(msg.value);
+          // tmpFunc(msg.id);
           break;
 
         default:
@@ -309,9 +313,7 @@ export default class Chat {
         this.position.geoLocation();
         break;
       case 'favorite':
-        this.resetOption();
-        this.tabOpen('Избранное', { type: 'tabFavorite' });
-        this.link.sendEvent({ event: 'getFavoriteAll' });
+        this.showFavorite();
         break;
       case 'submenu':
         this.groupMenu();
@@ -326,9 +328,17 @@ export default class Chat {
   }
 
   resetOption() {
-    this.option.remove();
+    if (this.option !== null) {
+      this.option.remove();
+    }
     this.option = null;
     this.group = null;
+  }
+
+  showFavorite() {
+    this.resetOption();
+    this.tabOpen('Избранное', { type: 'tabFavorite' });
+    this.link.sendEvent({ event: 'getFavoriteAll' });
   }
 
   deleteAll() {
@@ -506,5 +516,26 @@ export default class Chat {
   showGroup(msg) {
     this.tabRows.append(this.gui.createElm(msg.message));
     this.tabRows.scrollTop = this.tabRows.scrollHeight;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  // executeFunctionByName(str, args) {
+  //   const arr = str.split('.');
+  //   let fn = window[arr[0]];
+  //   for (let i = 1; i < arr.length; i += 1) {
+  //     fn = fn[arr[i]];
+  //   }
+  //   fn.apply(window, args);
+  // }
+
+  // eslint-disable-next-line class-methods-use-this
+  executeFunctionByName(functionName, context /* , args */) {
+    const args = Array.prototype.slice.call(arguments, 2);
+    const namespaces = functionName.split('.');
+    const func = namespaces.pop();
+    for (let i = 0; i < namespaces.length; i += 1) {
+      context = context[namespaces[i]];
+    }
+    return context[func].apply(context, args);
   }
 }
