@@ -26,11 +26,12 @@ export default class Chat {
     this.media = new MediaRec(domElmt, this.link, this.position);
     this.searh = new Search(domElmt, this.link);
 
-    this.eventDomElt = this.eventDomElt.bind(this);
+    // this.eventDomElt = this.eventDomElt.bind(this);
 
     this.option = null;
     this.upload = null;
     this.popup = null;
+    this.popupId = null;
     this.group = null;
 
     this.message = {};
@@ -39,7 +40,7 @@ export default class Chat {
 
   begin() {
     // Основной обработчик
-    this.domElmt.addEventListener('click', this.eventDomElt.bind());
+    this.domElmt.addEventListener('click', this.eventDomElt.bind(this));
 
     // DnD
     this.domElmt.addEventListener('dragover', (e) => {
@@ -87,20 +88,15 @@ export default class Chat {
           break;
         case 'favoriteAll':
           this.tabRows.append(this.gui.createElm(msg.message));
-          this.tabRows.scrollTop = this.tabRows.scrollHeight;
           break;
         case 'getGroup':
-          this.showGroup(msg);
+          this.tabRows.append(this.gui.createElm(msg.message));
           break;
         case 'search':
           this.tabRows.append(this.gui.createElm(msg.message));
-          this.tabRows.scrollTop = this.tabRows.scrollHeight;
           break;
         case 'funcOut':
           this.executeFunctionByName(msg.value, this, msg.id);
-          // this.executeFunctionByName(msg.value, msg.id)
-          // const tmpFunc = new Function(msg.value);
-          // tmpFunc(msg.id);
           break;
 
         default:
@@ -216,11 +212,19 @@ export default class Chat {
       this.upload = null;
     }
     // Элемент
-    if (e.target.closest('.mess-menu') !== null && this.popup === null) {
-      this.popupMenu(e);
-    } else if (this.popup !== null) {
+    if (e.target.closest('.mess-menu') !== null && this.popupId === e.target.closest('.element').querySelector('.mess-user-body').dataset.id) {
       this.popup.remove();
       this.popup = null;
+      this.popupId = null;
+    } else if (e.target.closest('.mess-menu') !== null && this.popup === null) {
+      this.popupMenu(e);
+    } else if (e.target.closest('.mess-menu') !== null && this.popup !== null) {
+      this.popup.remove();
+      this.popupMenu(e);
+    } else if (e.target.closest('.mess-menu') === null && this.popup !== null) {
+      this.popup.remove();
+      this.popup = null;
+      this.popupId = null;
     }
     // Увеличение картинки или видеопроигрывателя при клике на них
     if (e.target.classList.contains('mess-img') && (e.target.dataset.type.match(/image/) || e.target.dataset.type.match(/video/))) {
@@ -295,7 +299,7 @@ export default class Chat {
       { title: 'Категории', type: 'submenu', state: 'sub' },
       { title: 'Удалить всё', type: 'delete' },
     ];
-    const position = { top: '45px', right: '0', width: '155px' };
+    const position = { top: 45, right: 0, width: 155 };
     const host = {
       name: 'options',
       global: this.domElmt,
@@ -371,7 +375,7 @@ export default class Chat {
         { title: 'Ссылки', type: 'link' },
         { title: 'Остальное', type: 'file' },
       ];
-      const position = { top: '68px', right: '165px' };
+      const position = { top: 68, right: 165 };
       const host = {
         name: 'group',
         global: this.domElmt,
@@ -404,7 +408,7 @@ export default class Chat {
       { title: 'Аудио', type: 'audio' },
       { title: 'Файл', type: 'file' },
     ];
-    const position = { top: '-160px', left: '5px' };
+    const position = { top: -160, left: 5 };
     const host = {
       name: 'clip',
       global: this.domElmt,
@@ -429,15 +433,16 @@ export default class Chat {
 
   // Меню элемента
   popupMenu(e) {
+    this.popupId = e.target.closest('.element').querySelector('.mess-user-body').dataset.id;
     const menu = [
       { title: e.target.closest('.element').querySelector('.mess-user-body').dataset.favorite === 'yes' ? 'Удалить из избранного' : 'В избранное', type: 'favorite' },
       // { title: 'Закрепить', type: 'fix' },
       { title: 'Удалить', type: 'delete' },
     ];
-    const position = { top: '25px', right: '18px' };
+    const position = { top: 5, right: 18 };
     const host = {
       name: 'mess-item',
-      global: this.domElmt,
+      global: this.rows,
       local: e.target.closest('.mess-menu'),
     };
     this.popup = new MenuPopup(menu, position, host, this.popupAction.bind(this));
@@ -513,29 +518,17 @@ export default class Chat {
     }
   }
 
-  showGroup(msg) {
-    this.tabRows.append(this.gui.createElm(msg.message));
-    this.tabRows.scrollTop = this.tabRows.scrollHeight;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  // executeFunctionByName(str, args) {
-  //   const arr = str.split('.');
-  //   let fn = window[arr[0]];
-  //   for (let i = 1; i < arr.length; i += 1) {
-  //     fn = fn[arr[i]];
-  //   }
-  //   fn.apply(window, args);
-  // }
-
   // eslint-disable-next-line class-methods-use-this
   executeFunctionByName(functionName, context /* , args */) {
+    // eslint-disable-next-line prefer-rest-params
     const args = Array.prototype.slice.call(arguments, 2);
     const namespaces = functionName.split('.');
     const func = namespaces.pop();
     for (let i = 0; i < namespaces.length; i += 1) {
+      // eslint-disable-next-line no-param-reassign
       context = context[namespaces[i]];
     }
+    // eslint-disable-next-line prefer-spread
     return context[func].apply(context, args);
   }
 }

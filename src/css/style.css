@@ -51,15 +51,15 @@ nav {
   background-image: url(/src/img/events-bg-gr.jpg);
   flex-grow: 1;
   margin: 4px 0 4px 0;
-  flex-direction: column;
-  justify-content: flex-end;
-  display: flex;
+  /* flex-direction: column; */
+  /* justify-content: flex-end; */
+  /* display: flex; */
   overflow: hidden;
 }
 
 .content-row {
-  min-height: min-content;
-  margin-bottom: 10px;
+  height: calc( 100% - 20px );
+  margin: 10px 0;
   overflow: auto;
 }
 
@@ -140,13 +140,13 @@ nav {
 
 .el-user {
   margin-right: 10px;
-  border-radius: 10px 10px 0 10px;
+  border-radius: 5px 5px 0 5px;
   transform-origin: left center;
 }
 
 .el-bot {
   margin-left: 10px;
-  border-radius: 0 10px 10px 10px;
+  border-radius: 0 5px 5px 5px;
 }
 
 .input-field {
@@ -233,8 +233,11 @@ input {
   background-color: #33383b;
 }
 
+footer {
+  min-height: 48px;
+}
+
 .message {
-  height: 48px;
   display: flex;
   font-size: 20px;
   background-color: #2a2f32;
@@ -323,7 +326,7 @@ form {
   top: 0;
   right: 0;
   background-color: rgba(0,0,0, 0.8);
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   transition: 0.5s;
   /* border-radius: 20px; */
 }
@@ -339,7 +342,8 @@ form {
 
 .tab-content {
   overflow: auto;
-  margin: 20px 0px 0px 10px;
+  margin: 10px;
+  height: calc( 100% - 68px );
 }
 
 .tab-title {

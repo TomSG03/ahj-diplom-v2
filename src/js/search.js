@@ -1,11 +1,8 @@
-// import Link from './link';
-
 export default class Search {
   constructor(domElmt, server) {
     this.domElmt = domElmt;
     this.server = server;
 
-    // this.link = new Link(server);
     this.tabSearch = this.domElmt.querySelector('.tab-overlay');
   }
 
@@ -28,10 +25,5 @@ export default class Search {
   onInput(e) {
     this.tabSearch.querySelector('.tab-content').innerHTML = '';
     this.server.sendEvent({ event: 'search', id: '0', value: e.target.value });
-  }
-
-  searchShow(msg) {
-    this.tabRows.append(this.gui.createElm(msg.message.message));
-    this.tabRows.scrollTop = this.tabRows.scrollHeight;
   }
 }
