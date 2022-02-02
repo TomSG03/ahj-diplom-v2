@@ -4,6 +4,8 @@ export default class Search {
     this.server = server;
 
     this.tabSearch = this.domElmt.querySelector('.tab-overlay');
+
+    this.onInput = this.onInput.bind(this);
   }
 
   init() {
@@ -13,17 +15,29 @@ export default class Search {
     this.searchPanel = this.tabSearch.querySelector('.tab-head');
     this.searchPanel.querySelector('.tab-title').insertAdjacentElement('afterend', input);
     this.inputSearch = this.tabSearch.querySelector('input');
-    this.inputSearch.focus();
+    setTimeout(() => {
+      this.inputSearch.focus();
+    }, 500);
 
-    this.inputSearch.addEventListener('input', this.onInput.bind(this));
+    this.inputSearch.addEventListener('input', this.debounce(this.onInput, 500));
   }
 
   tabClear() {
     this.inputSearch.remove();
   }
 
-  onInput(e) {
+  // eslint-disable-next-line class-methods-use-this
+  debounce(callback, delay) {
+    let timeout;
+    return () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(callback, delay);
+    };
+  }
+
+  onInput() {
     this.tabSearch.querySelector('.tab-content').innerHTML = '';
-    this.server.sendEvent({ event: 'search', id: '0', value: e.target.value });
+    const input = this.tabSearch.querySelector('input');
+    this.server.sendEvent({ event: 'search', id: '0', value: input.value });
   }
 }

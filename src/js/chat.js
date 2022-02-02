@@ -239,17 +239,18 @@ export default class Chat {
   // Запись видео
   tabRecVideo() {
     this.tabClose();
-    this.tabOpen('Запись видео');
+    this.tabOpen('Запись видео', { type: 'videoRec' });
     this.media.mediaRecord('video/mp4');
   }
 
   // вкладка поиска
   tabFind() {
     this.tabClose();
-    this.tabOpen('Поиск');
+    this.tabOpen('Поиск', { type: 'search' });
     this.searh.init();
   }
 
+  // Открытие боковой шторки
   tabOpen(title, obj = {}) {
     this.tabTitle.textContent = title;
     this.domElmt.querySelector('.tab-overlay').style.width = '100%';
@@ -278,6 +279,7 @@ export default class Chat {
     }
   }
 
+  // Закрытие боковой шторки
   tabClose() {
     if (this.tab.querySelector('.video-cover') !== null) {
       this.media.cancelRecording();
@@ -403,7 +405,7 @@ export default class Chat {
   uploadMenu() {
     this.tabClose();
     const menu = [
-      { title: 'Картинка', type: 'image' },
+      { title: 'Картинки', type: 'image' },
       { title: 'Видео', type: 'video' },
       { title: 'Аудио', type: 'audio' },
       { title: 'Файл', type: 'file' },

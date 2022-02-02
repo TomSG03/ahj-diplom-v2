@@ -38,7 +38,6 @@ nav {
 }
 
 .menu-head {
-  /* margin: 0 10px; */
   cursor: pointer;
 }
 
@@ -51,9 +50,6 @@ nav {
   background-image: url(/src/img/events-bg-gr.jpg);
   flex-grow: 1;
   margin: 4px 0 4px 0;
-  /* flex-direction: column; */
-  /* justify-content: flex-end; */
-  /* display: flex; */
   overflow: hidden;
 }
 
@@ -103,7 +99,6 @@ nav {
 .mess-img {
   min-width: 100px;
 	max-width: 200px;
-	/* height: 160px; */
   border-radius: 5px;
 }
 
@@ -188,7 +183,6 @@ input {
 }
 
 .buttonAsk {
-  /* background-repeat: no-repeat; */
   background-size: 40px;
   background-position: center center;
   height: 48px;
@@ -215,7 +209,6 @@ input {
 .visible {
   visibility: visible;
 }
-
 
 .upload-item {
   background-color: #2a2f32;
@@ -326,9 +319,7 @@ form {
   top: 0;
   right: 0;
   background-color: rgba(0,0,0, 0.8);
-  /* overflow-x: hidden; */
   transition: 0.5s;
-  /* border-radius: 20px; */
 }
 .tab-head {
   display: flex;
@@ -352,16 +343,7 @@ form {
   margin-right: 10px;
 }
 
-/* .tab-overlay-content {
-  position: relative;
-  top: 25%;
-  width: 100%;
-  text-align: center;
-  margin-top: 30px;
-} */
-
 .tab-closebtn {
-  /* padding: 8px; */
   height: 44px;
   font-size: 2.5rem;
   color: #828689;
@@ -377,46 +359,39 @@ form {
   color: #f1f1f1;
 }
 
-.tab-overlay .tab-closebtn {
-  /* position: absolute; */
-  /* top: 3px;
-  right: 10px; */
-}
-
-
 /* ------------------ Scroll --------------------- */
 
 :-webkit-scrollbar-button { 
-	background-image:url('');
-	background-repeat:no-repeat;
-	width:6px;
-	height:0px
+	background-image: none;
+	background-repeat: no-repeat;
+	width: 10px;
+	height: 0px
 	}
 	
 	::-webkit-scrollbar-track {
-	background-color:#b1b3b5;
+	background-color: #b1b3b5;
 	border-radius: 5px;
-	box-shadow:0px 0px 3px #000 inset;
+	box-shadow: 0px 0px 3px #000 inset;
 	}
 	
  ::-webkit-scrollbar-thumb {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	background-color:#33383b;
-	box-shadow:0px 1px 1px #fff inset;
-	background-image:url('../img/scrl.png');
-	background-position:center;
-	background-repeat:no-repeat;
+	background-color: #33383b;
+	box-shadow: 0px 1px 1px #fff inset;
+	background-image: url('../img/scrl.png');
+	background-position: center;
+	background-repeat: no-repeat;
 	}
 	
 	::-webkit-resizer{
-	background-image:url('');
-	background-repeat:no-repeat;
-	width:7px;
-	height:0px
+	background-image: none;
+	background-repeat: no-repeat;
+	width: 10px;
+	height: 0px
 	} 
 	
 ::-webkit-scrollbar{
-	width: 11px;
+	width: 10px;
 	} 
 	
