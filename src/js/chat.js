@@ -26,6 +26,7 @@ export default class Chat {
     this.media = new MediaRec(domElmt, this.link, this.position);
     this.searh = new Search(domElmt, this.link);
 
+    this.begin = this.begin.bind(this);
     // this.eventDomElt = this.eventDomElt.bind(this);
 
     this.option = null;
@@ -36,9 +37,14 @@ export default class Chat {
 
     this.message = {};
     this.txtFlag = '';
+
+    this.noSendMsg = 0;
+    this.stepSend = 9;
+    this.fixScroll = false;
   }
 
   begin() {
+    this.rows.addEventListener('scroll', this.eventScrollRows.bind(this));
     // Основной обработчик
     this.domElmt.addEventListener('click', this.eventDomElt.bind(this));
 
@@ -68,12 +74,20 @@ export default class Chat {
       switch (msg.event) {
         case 'connect':
           // this.nikName = msg.message;
-          this.gui.log(`ws connect: ${msg.message}`);
+          this.gui.log(`ws connect: ${msg.message}, old messages: ${msg.noSendMsg}`);
+          this.noSendMsg = msg.noSendMsg;
+          if (this.noSendMsg > 0) {
+            // this.link.sendEvent({ event: 'noSendMsg', value: this.noSendMsg });
+            this.nextOldReceive();
+          }
           break;
         case 'system':
           // this.gui.showAside(msg.message.users, this.nikName);
           break;
-        case 'message':
+        case 'noSendMsg':
+          this.oldReceive(msg);
+          break;
+        case 'newMessage':
           this.rows.append(this.gui.createElm(msg.message));
           this.rows.scrollTop = this.rows.scrollHeight;
           break;
@@ -112,6 +126,14 @@ export default class Chat {
     this.link.ws.addEventListener('error', (e) => {
       this.gui.log(`ws error: ${e}`);
     });
+  }
+
+  // Заполнение при скролле вверх
+  eventScrollRows() {
+    if (this.rows.scrollTop === 0 && this.noSendMsg > 0) {
+      this.fixScroll = false;
+      this.nextOldReceive();
+    }
   }
 
   // Обработчики событий формы ввода
@@ -471,6 +493,7 @@ export default class Chat {
     }
     this.popup.remove();
     this.popup = null;
+    this.popupId = null;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -520,6 +543,7 @@ export default class Chat {
     }
   }
 
+  // Запуск функции по имени полученному из строки
   // eslint-disable-next-line class-methods-use-this
   executeFunctionByName(functionName, context /* , args */) {
     // eslint-disable-next-line prefer-rest-params
@@ -532,5 +556,33 @@ export default class Chat {
     }
     // eslint-disable-next-line prefer-spread
     return context[func].apply(context, args);
+  }
+
+  // Ленивая подгрузка
+  oldReceive(msg) {
+    const elmt = this.gui.createElm(msg.message);
+    this.rows.insertAdjacentElement('afterbegin', elmt);
+    if (this.rows.scrollHeight === this.rows.clientHeight) {
+      this.rows.scrollTop = this.rows.scrollHeight;
+    } else if (this.fixScroll === false) {
+      this.fixScroll = true;
+      const arrRow = this.rows.querySelectorAll('.row');
+      // eslint-disable-next-line prefer-destructuring
+      this.scrollFixPos = arrRow[1];
+      this.scrollFixPos.scrollIntoView({ block: 'start' });
+    }
+    if (this.noSendMsg > 0 && this.currentSend > 0) {
+      this.link.sendEvent({ event: 'noSendMsg', value: this.noSendMsg });
+      this.currentSend -= 1;
+      this.noSendMsg -= 1;
+    } else if (this.noSendMsg > 0 && this.rows.scrollHeight - this.rows.clientHeight - 1 < 0) {
+      this.nextOldReceive(); // первое заполнение до появления скролла
+    }
+  }
+
+  nextOldReceive() {
+    this.currentSend = this.stepSend;
+    this.link.sendEvent({ event: 'noSendMsg', value: this.noSendMsg });
+    this.noSendMsg -= 1;
   }
 }

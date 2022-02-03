@@ -15,7 +15,7 @@ export default class Link {
     }));
   }
 
-  sendEvent(obj) {
+  sendEvent(obj = { event: '', id: '', value: '' }) {
     this.ws.send(JSON.stringify({
       event: obj.event,
       id: obj.id,

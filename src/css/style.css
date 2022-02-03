@@ -88,7 +88,6 @@ nav {
 
 .mess-user-body {
   padding: 0 20px 4px 0;
-
 }
 
 .mess-link {
@@ -136,7 +135,7 @@ nav {
 .el-user {
   margin-right: 10px;
   border-radius: 5px 5px 0 5px;
-  transform-origin: left center;
+  /* transform-origin: left center; */
 }
 
 .el-bot {
@@ -364,34 +363,39 @@ form {
 :-webkit-scrollbar-button { 
 	background-image: none;
 	background-repeat: no-repeat;
-	width: 10px;
+	width: 0px;
 	height: 0px
 	}
 	
 	::-webkit-scrollbar-track {
 	background-color: #b1b3b5;
-	border-radius: 5px;
-	box-shadow: 0px 0px 3px #000 inset;
+	/* border-radius: 5px; */
+	/* box-shadow: 0px 0px 3px #000 inset; */
 	}
 	
  ::-webkit-scrollbar-thumb {
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+	/* -webkit-border-radius: 5px; */
+	/* border-radius: 5px; */
 	background-color: #33383b;
-	box-shadow: 0px 1px 1px #fff inset;
+	/* box-shadow: 0px 1px 1px #fff inset; */
 	background-image: url('../img/scrl.png');
 	background-position: center;
 	background-repeat: no-repeat;
 	}
 	
-	::-webkit-resizer{
+	::-webkit-resizer {
 	background-image: none;
 	background-repeat: no-repeat;
-	width: 10px;
+	width: 8px;
 	height: 0px
 	} 
 	
 ::-webkit-scrollbar{
-	width: 10px;
+	width: 8px;
 	} 
+
+  html {
+    scrollbar-color: #33383b #b1b3b5; /* «цвет ползунка» «цвет полосы скроллбара» */
+    scrollbar-width: thin; /* толщина */
+}
 	
