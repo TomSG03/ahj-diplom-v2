@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import GUI from './gui';
 import Link from './link';
 import Data from './data';
@@ -460,7 +461,7 @@ export default class Chat {
     this.popupId = e.target.closest('.element').querySelector('.mess-user-body').dataset.id;
     const menu = [
       { title: e.target.closest('.element').querySelector('.mess-user-body').dataset.favorite === 'yes' ? 'Удалить из избранного' : 'В избранное', type: 'favorite' },
-      // { title: 'Закрепить', type: 'fix' },
+      { title: 'Сохранить', type: 'save' },
       { title: 'Удалить', type: 'delete' },
     ];
     const position = { top: 5, right: 18 };
@@ -481,6 +482,9 @@ export default class Chat {
           id: e.target.closest('.element').querySelector('.mess-user-body').dataset.id,
         });
         break;
+      case 'save':
+        this.saveElmt(e.target);
+        break;
       case 'favorite':
         this.link.sendEvent({
           event: 'favorite',
@@ -491,7 +495,10 @@ export default class Chat {
       default:
         break;
     }
-    this.popup.remove();
+
+    if (this.popup !== null) {
+      this.popup.remove();
+    }
     this.popup = null;
     this.popupId = null;
   }
@@ -499,6 +506,31 @@ export default class Chat {
   // eslint-disable-next-line class-methods-use-this
   popupItemRemove(e) {
     e.closest('.row').remove();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  saveElmt(e) {
+    let file;
+    const link = document.createElement('a');
+    const { type, fname } = e.closest('.row').querySelector('.mess-user-body').dataset;
+
+    if (type.match(/txt/) || type.match(/link/)) {
+      const content = e.closest('.row').querySelector('.mess-user-body').textContent;
+      const blob = new Blob([content], { type: 'text/plain' });
+      file = new File([blob], 'fileName.txt', { type: 'text/plain' });
+      link.download = 'chaos.txt';
+      link.href = URL.createObjectURL(file);
+      link.click();
+    } else if (type.match(/image/) || type.match(/audio/) || type.match(/video/)) {
+      const mediaContent = e.closest('.row').querySelector('.mess-img');
+      link.href = mediaContent.src || mediaContent.href;
+      link.download = fname;
+      link.click();
+    } else {
+      const linkFile = e.closest('.row').querySelector('.mess-link');
+      linkFile.download = fname;
+      linkFile.click();
+    }
   }
 
   // Функции WEbSocket

@@ -22,6 +22,9 @@ export default class GUI {
     divMess.style.paddingRight = '0';
     divMess.dataset.id = obj.id;
     divMess.dataset.favorite = obj.favorite;
+
+    const divMessFooter = document.createElement('div');
+    divMessFooter.className = 'mess-footer';
     const divTime = document.createElement('div');
     divTime.className = 'time-stp';
     divTime.innerHTML = `${obj.favorite === 'yes' ? '★ ' : ''}${obj.date}`;
@@ -29,16 +32,22 @@ export default class GUI {
     divGeo.className = 'geo-stp';
     divGeo.innerHTML = obj.geo !== '' ? `&#127758 [${obj.geo}]` : '';
 
-    if (obj.type.match(/txt/)) {
+    if (obj.type.match(/txt/) || obj.type.match(/link/)) {
       divMess.innerHTML = obj.message;
-    } else if (obj.type.match(/link/)) {
-      divMess.innerHTML = obj.message;
+      // divMess.dataset.fname = 'chaos.txt';
     } else if (obj.type.match(/image/)) {
       divMess.append(this.crateImgItem(obj));
+      divMess.dataset.fname = obj.messageName;
     } else if (obj.type.match(/audio/) || obj.type.match(/video/)) {
       divMess.append(this.crateMediaItem(obj));
+      divMess.dataset.fname = obj.messageName;
     } else {
       divMess.append(this.crateFileItem(obj));
+      divMess.dataset.fname = obj.messageName;
+      const a = document.createElement('a');
+      a.href = obj.message;
+      a.className = 'mess-link';
+      divMess.append(a);
     }
 
     const divMenu = document.createElement('div');
@@ -54,8 +63,17 @@ export default class GUI {
       divElmt.append(divMenu);
     }
     divElmt.append(divMess);
-    divElmt.append(divGeo);
-    divElmt.append(divTime);
+    if (!obj.type.match(/txt/) && !obj.type.match(/link/)) {
+      const divName = document.createElement('div');
+      divName.className = 'name-file';
+      divName.innerHTML = obj.messageName;
+      divElmt.append(divName);
+      divMess.classList.add('non-txt');
+    }
+
+    divMessFooter.append(divGeo);
+    divMessFooter.append(divTime);
+    divElmt.append(divMessFooter);
     divRow.append(divElmt);
 
     return divRow;
@@ -81,12 +99,9 @@ export default class GUI {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  crateFileItem(obj) {
-    const item = document.createElement('a');
-    item.className = 'mess-img';
-    item.dataset.type = obj.type;
-    item.href = obj.message;
-    item.textContent = obj.messageName;
+  crateFileItem() {
+    const item = document.createElement('div');
+    item.className = 'mess-file';
     return item;
   }
 }
