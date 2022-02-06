@@ -23,20 +23,6 @@ export default class Link {
     }));
   }
 
-  // если в тексте есть ссылки то добавлем <a href>
-  // eslint-disable-next-line class-methods-use-this
-  createLink(str, arrLink) {
-    const strArr = str.split(' ');
-    for (let i = 0; i < strArr.length; i += 1) {
-      const index = arrLink.indexOf(strArr[i]);
-      if (index !== -1) {
-        const newStr = `<a href="${arrLink[index]}" class="mess-link" target="_blank">${arrLink[index]}</a>`;
-        strArr[i] = newStr;
-      }
-    }
-    return strArr.join(' ');
-  }
-
   // eslint-disable-next-line class-methods-use-this
   sendData(arrFiles = [], date, location) {
     const msg = {};
@@ -59,7 +45,7 @@ export default class Link {
     reader.readAsDataURL(obj.file);
     reader.onloadend = () => {
       msg.content = reader.result;
-      msg.contentName = reader.name;
+      msg.contentName = obj.file.name;
       msg.type = obj.type;
       this.sendMsg(msg, date, location);
     };

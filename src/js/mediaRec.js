@@ -18,6 +18,9 @@ export default class MediaRec {
     const navigatorDevices = type === 'video/mp4' ? { audio: true, video: true } : { audio: true };
     this.blobType = type;
 
+    if (this.blobType === 'video/mp4') {
+      this.videoCap();
+    }
     if (!navigator.mediaDevices || !window.MediaRecorder) {
       this.showError();
       return;
@@ -32,6 +35,9 @@ export default class MediaRec {
           this.stream = stream;
           this.recorder = new MediaRecorder(this.stream);
           if (this.blobType === 'video/mp4') {
+            if (this.tabVideo.querySelector('.video-cap') !== null) {
+              this.tabVideo.querySelector('.video-cap').remove();
+            }
             this.videoWindow('muted');
             this.video = this.tabVideo.querySelector('video');
             this.video.srcObject = stream;
@@ -47,6 +53,13 @@ export default class MediaRec {
     }
     this.createRecordPanel();
     this.recPanel.addEventListener('click', this.eventRecPanel.bind(this));
+  }
+
+  videoCap() {
+    const divVideo = document.createElement('div');
+    divVideo.className = 'video-cap';
+    divVideo.innerHTML = 'Получение доступа к камере';
+    this.tabVideo.querySelector('.tab-content').append(divVideo);
   }
 
   videoWindow(muted) {
@@ -81,13 +94,13 @@ export default class MediaRec {
     switch (type) {
       case 'record':
         div.innerHTML = `
-          <button class="rec-panel-item stop-btn" data-type="record" aria-label="Стоп" width="24" height="24" >
-            <svg xml:space="preserve" viewBox="0 0 3200 4525.71" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <path fill="currentColor" d="M1600 662.86c-880,0 -1600,720 -1600,1600 0,880 720,1600 1600,1600 880,0 1600,-720 1600,-1600 0,-880 -720,-1600 -1600,-1600zm0 3000c-770,0 -1400,-630 -1400,-1400 0,-770 630,-1400 1400,-1400 770,0 1400,630 1400,1400 0,770 -630,1400 -1400,1400z"/>
-              <path fill="currentColor" d="M2231.64 2369.83l-460.78 251.88 -476.09 260.25c-38.84,21.23 -82.58,20.46 -120.65,-2.11 -38.07,-22.58 -59.72,-60.59 -59.72,-104.85l0 -512.13 0 -512.13c0,-44.26 21.65,-82.28 59.72,-104.85 38.07,-22.58 81.81,-23.34 120.65,-2.11l476.09 260.25 460.79 251.88c40.15,21.95 63.43,61.21 63.43,106.97 0,45.76 -23.28,85.02 -63.43,106.97z"/>
-            </svg>
-          </button>  
-        `;
+        <button class="rec-panel-item stop-btn" data-type="record" aria-label="Стоп" width="24" height="24" >
+          <svg width="32px" height="32px" viewBox="0 0 2.15 2.15" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <path fill="currentColor" d="M1.45 1.13l-0.25 0.15 -0.24 0.14c-0.02,0.02 -0.05,0.02 -0.07,0 -0.03,-0.01 -0.04,-0.03 -0.04,-0.06l0 -0.29 0 -0.3c0,-0.02 0.01,-0.05 0.04,-0.06 0.02,-0.02 0.05,-0.02 0.07,0 0.08,0.05 0.16,0.09 0.24,0.14l0.25 0.15c0.02,0.01 0.04,0.04 0.04,0.07 0,0.02 -0.02,0.05 -0.04,0.06z"/>
+            <path fill="currentColor" d="M1.08 0c-0.6,0 -1.08,0.48 -1.08,1.08 0,0.59 0.48,1.07 1.08,1.07 0.59,0 1.07,-0.48 1.07,-1.07 0,-0.6 -0.48,-1.08 -1.07,-1.08zm0 2.02c-0.52,0 -0.95,-0.42 -0.95,-0.94 0,-0.52 0.43,-0.95 0.95,-0.95 0.52,0 0.94,0.43 0.94,0.95 0,0.52 -0.42,0.94 -0.94,0.94z"/>
+          </svg>
+        </button>  
+      `;
         break;
       case 'stop':
         div.innerHTML = `

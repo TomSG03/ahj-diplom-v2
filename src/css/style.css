@@ -10,6 +10,35 @@ body {
   background-color: #090e11;
   color: #b1b3b5;
   font-family: "PT Sans", Calibri, Helvetica, Arial, sans-serif;
+  z-index: 1;
+}
+
+.mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 150;
+  visibility: hidden;
+  text-align: center;
+}
+
+.mask::after {
+  content: 'Перетяните сюда файл';
+}
+
+.dnd {
+  box-sizing: border-box;
+  border: dashed 4px #b1b3b5;  
+  border-radius: 10px;
+  padding-top: 42vh;
+  visibility: inherit;
+}
+
+.dnd::after {
+  content: 'Перетяните сюда файл';
+  font-size: 3rem;
 }
 
 main {
@@ -20,7 +49,8 @@ main {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 10px;
+  padding: 20px;
+  position: relative;
 }
 
 nav {
@@ -28,13 +58,26 @@ nav {
   width: 100%;
   min-height: 48px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   font-size: 20px;
   background-color: #2a2f32;
   border: 1px solid;
   border-color: #2a2f32;
   border-radius: var(--main-border-radius) var(--main-border-radius) 0 0;
+}
+
+.ws-status {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #33383b;
+  margin-left: 20px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
 }
 
 .menu-head {
@@ -63,9 +106,9 @@ nav {
   position: relative;
   max-width: 60%;
   border-style: solid;
-  padding: 5px 5px 2px 5px;
+  padding: 5px 7px 5px 7px;
   background-color: #056162;
-  color: #e5eaeb;
+  /* color: #e5eaeb; */
   font-size: 1.1rem;
   word-wrap: break-word;
 }
@@ -333,8 +376,18 @@ form {
   align-items: center;
   margin: 40px auto;
   width: 80%;
+  background-color: #33383b;
+}
 
-  /* min-height: 300px; */
+.video-cap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px auto;
+  width: 80%;
+  height: 100px;
+  background-color: #33383b;
+  border-radius: 5px;
 }
 
 .play-video {

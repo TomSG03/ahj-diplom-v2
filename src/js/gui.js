@@ -1,3 +1,5 @@
+import Data from './data';
+
 export default class GUI {
   constructor(host) {
     this.host = host;
@@ -32,9 +34,11 @@ export default class GUI {
     divGeo.className = 'geo-stp';
     divGeo.innerHTML = obj.geo !== '' ? `&#127758 [${obj.geo}]` : '';
 
-    if (obj.type.match(/txt/) || obj.type.match(/link/)) {
+    if (obj.type.match(/txt/)) {
       divMess.innerHTML = obj.message;
-      // divMess.dataset.fname = 'chaos.txt';
+    } else if (obj.type.match(/link/)) {
+      const url = Data.findURL(obj.message);
+      divMess.innerHTML = this.createLink(obj.message, url);
     } else if (obj.type.match(/image/)) {
       divMess.append(this.crateImgItem(obj));
       divMess.dataset.fname = obj.messageName;
@@ -103,5 +107,19 @@ export default class GUI {
     const item = document.createElement('div');
     item.className = 'mess-file';
     return item;
+  }
+
+  // если в тексте есть ссылки то добавлем <a href>
+  // eslint-disable-next-line class-methods-use-this
+  createLink(str, arrLink) {
+    const strArr = str.split(' ');
+    for (let i = 0; i < strArr.length; i += 1) {
+      const index = arrLink.indexOf(strArr[i]);
+      if (index !== -1) {
+        const newStr = `<a href="${arrLink[index]}" class="mess-link" target="_blank">${arrLink[index]}</a>`;
+        strArr[i] = newStr;
+      }
+    }
+    return strArr.join(' ');
   }
 }

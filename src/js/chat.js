@@ -22,13 +22,12 @@ export default class Chat {
     this.tabTitle = this.domElmt.querySelector('.tab-title');
     this.input = this.domElmt.querySelector('.input-field');
     this.buttonAsk = this.domElmt.querySelector('.buttonAsk');
-    this.clip = this.domElmt.querySelector('.clip');
+    this.mask = this.domElmt.querySelector('.mask');
 
     this.media = new MediaRec(domElmt, this.link, this.position);
     this.searh = new Search(domElmt, this.link);
 
     this.begin = this.begin.bind(this);
-    // this.eventDomElt = this.eventDomElt.bind(this);
 
     this.option = null;
     this.upload = null;
@@ -42,6 +41,11 @@ export default class Chat {
     this.noSendMsg = 0;
     this.stepSend = 9;
     this.fixScroll = false;
+
+    this.targetDrop = null;
+
+    this.wsStatus = '';
+    this.wsStatusElmt = domElmt.querySelector('.ws-status');
   }
 
   begin() {
@@ -50,13 +54,28 @@ export default class Chat {
     this.domElmt.addEventListener('click', this.eventDomElt.bind(this));
 
     // DnD
-    this.domElmt.addEventListener('dragover', (e) => {
+    this.domElmt.addEventListener('dragenter', (e) => {
       e.preventDefault();
     });
 
-    this.domElmt.addEventListener('drop', (e) => {
+    this.domElmt.addEventListener('dragover', (e) => {
       e.preventDefault();
+      this.shadowDND();
+    });
+
+    this.domElmt.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      if (e.target === this.mask) {
+        this.shadowDNDHidden();
+      }
+    });
+
+    this.domElmt.addEventListener('drop', (e) => {
       this.link.sendData(e.dataTransfer.files, Data.getTime(), this.position.location);
+      if (e.target === this.mask) {
+        this.shadowDNDHidden();
+      }
+      e.preventDefault();
     });
 
     // Текстовый ввод
@@ -74,16 +93,13 @@ export default class Chat {
       const msg = JSON.parse(e.data);
       switch (msg.event) {
         case 'connect':
-          // this.nikName = msg.message;
+          this.wsStatus = 'ok';
+          this.wsStatusElmt.style.backgroundColor = '#056162';
           this.gui.log(`ws connect: ${msg.message}, old messages: ${msg.noSendMsg}`);
           this.noSendMsg = msg.noSendMsg;
           if (this.noSendMsg > 0) {
-            // this.link.sendEvent({ event: 'noSendMsg', value: this.noSendMsg });
             this.nextOldReceive();
           }
-          break;
-        case 'system':
-          // this.gui.showAside(msg.message.users, this.nikName);
           break;
         case 'noSendMsg':
           this.oldReceive(msg);
@@ -119,12 +135,19 @@ export default class Chat {
       }
     });
     this.link.ws.addEventListener('close', (e) => {
+      this.wsStatus = 'close';
+      this.wsStatusElmt.style.backgroundColor = '';
+      this.showError();
       this.gui.log(`ws close: ${e}`);
       if (e.reason) {
         this.gui.log(e);
       }
+      // this.mask.style.display = 'block';
     });
     this.link.ws.addEventListener('error', (e) => {
+      this.wsStatusElmt.style.backgroundColor = '#68bbe4';
+      this.wsStatus = 'error';
+      // this.showError();
       this.gui.log(`ws error: ${e}`);
     });
   }
@@ -141,17 +164,17 @@ export default class Chat {
   onSubmit(e) {
     this.tabClose();
     e.preventDefault();
-    switch (this.buttonAsk.querySelector('span').dataset.type) {
+    const type = document.activeElement === this.input ? 'text' : this.buttonAsk.querySelector('span').dataset.type;
+    switch (type) {
       case 'text':
         if (this.input.value !== '') {
           const url = Data.findURL(this.input.value);
           if (url !== null) {
             this.message.type = 'link';
-            this.message.content = this.link.createLink(this.input.value, url);
           } else {
             this.message.type = 'txt';
-            this.message.content = this.input.value;
           }
+          this.message.content = this.input.value;
           this.link.sendMsg(this.message, Data.getTime(), this.position.location);
           this.resetForm();
         }
@@ -450,6 +473,7 @@ export default class Chat {
     const i = document.createElement('input');
     i.type = 'file';
     i.accept = `${e.target.dataset.type}/*`;
+    i.multiple = 'multiple';
     i.click();
     i.oninput = () => {
       this.link.sendData(i.files, Data.getTime(), this.position.location);
@@ -616,5 +640,36 @@ export default class Chat {
     this.currentSend = this.stepSend;
     this.link.sendEvent({ event: 'noSendMsg', value: this.noSendMsg });
     this.noSendMsg -= 1;
+  }
+
+  showError() {
+    const winItems = {
+      head: 'Внимание!!!',
+      text: ` 
+        Отсутствует соединение с сервером.<br><br>
+        Попробуйте перезагрузить страницу или 
+        перезапустить браузер.<br><br>
+        Проверьте соединение с интернетом.
+        `,
+      button: {
+        cancel: 'Понятно',
+      },
+    };
+    // this.mask.style.display = 'block';
+    this.domElmt.style.pointerEvents = 'none';
+    this.ask = new WinModal(this.domElmt);
+    this.ask.winModalDialog(winItems);
+  }
+
+  shadowDND() {
+    this.mask.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    this.mask.classList.add('dnd');
+    this.mask.style.visiblity = 'visible';
+  }
+
+  shadowDNDHidden() {
+    this.mask.style.backgroundColor = '';
+    this.mask.classList.remove('dnd');
+    this.mask.style.visiblity = '';
   }
 }
