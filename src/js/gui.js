@@ -48,6 +48,7 @@ export default class GUI {
     } else {
       divMess.append(this.crateFileItem(obj));
       divMess.dataset.fname = obj.messageName;
+      this.log(obj.messageName);
       const a = document.createElement('a');
       a.href = obj.message;
       a.className = 'mess-link';

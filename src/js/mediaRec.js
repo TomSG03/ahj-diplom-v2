@@ -115,7 +115,7 @@ export default class MediaRec {
       case 'delete':
         div.innerHTML = `
           <button class="rec-panel-item" data-type="cancel" aria-label="Отменить" width="24" height="24" >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 22">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path d="M5,0,3,2H0V4H16V2H13L11,0ZM15,5H1V19.5A2.5,2.5,0,0,0,3.5,22h9A2.5,2.5,0,0,0,15,19.5Z" fill="currentColor"></path>
             </svg>
           </button>
@@ -124,7 +124,7 @@ export default class MediaRec {
       case 'play':
         div.innerHTML = `
           <button class="rec-panel-item" data-type="play" aria-label="Воспроизвести" width="24" height="24">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 18">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18">
               <path d="M15.05,8.39,2,.32a1,1,0,0,0-1.53.85V16.83A1,1,0,0,0,2,17.7L15,10.1A1,1,0,0,0,15.05,8.39Z" fill="currentColor"></path>
             </svg>
           </button>

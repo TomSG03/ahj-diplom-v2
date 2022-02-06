@@ -24,14 +24,10 @@ body {
   text-align: center;
 }
 
-.mask::after {
-  content: 'Перетяните сюда файл';
-}
-
 .dnd {
   box-sizing: border-box;
   border: dashed 4px #b1b3b5;  
-  border-radius: 10px;
+  border-radius: 15px;
   padding-top: 42vh;
   visibility: inherit;
 }
@@ -269,6 +265,7 @@ input {
   border: none;
   border-radius: var(--main-border-radius);
   color: #828689;
+  margin-left: 4px;
 }
 
 .button {
@@ -345,8 +342,8 @@ form {
 .rec-panel-item {
   margin: 0 3px;
   color:#b1b3b5;
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   background-color: #2a2f32;
   border: solid 1px #2a2f32;
   cursor: pointer;
@@ -366,7 +363,7 @@ form {
 
 .rec-time {
   margin: 0 5px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   user-select: none;
 }
 

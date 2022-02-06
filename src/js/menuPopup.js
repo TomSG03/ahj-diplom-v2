@@ -26,7 +26,7 @@ export default class MenuPopup {
     div.append(ul);
     for (let i = 0; i < this.item.length; i += 1) {
       if (this.item[i].type === 'submenu') {
-        ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp⌵`;
+        ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp»`;
       } else ul.innerHTML += `<li><button class="upload-item" data-type="${this.item[i].type}">${this.item[i].title}${this.item[i].state === true ? '&nbsp &nbsp &nbsp✔' : ''}</button></li>`;
     }
     this.localDom.append(div);
