@@ -319,7 +319,7 @@ export default class Chat {
           this.tabTitle.textContent = `${this.tabTitle.textContent} Видео файлы`;
           break;
         default:
-          this.tabTitle.textContent = `${this.tabTitle.textContent} Прочее`;
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Остальные файлы`;
           break;
       }
     }
@@ -416,12 +416,12 @@ export default class Chat {
   groupMenu() {
     if (this.group === null) {
       const menu = [
-        { title: 'Картинки', type: 'image' },
-        { title: 'Видео', type: 'video' },
-        { title: 'Аудио', type: 'audio' },
         { title: 'Текст', type: 'txt' },
         { title: 'Ссылки', type: 'link' },
-        { title: 'Остальное', type: 'file' },
+        { title: 'Видео', type: 'video' },
+        { title: 'Аудио', type: 'audio' },
+        { title: 'Изображение', type: 'image' },
+        { title: 'Другие файлы', type: 'file' },
       ];
       const position = { top: 68, right: 165 };
       const host = {
@@ -451,10 +451,10 @@ export default class Chat {
   uploadMenu() {
     this.tabClose();
     const menu = [
-      { title: 'Картинки', type: 'image' },
       { title: 'Видео', type: 'video' },
       { title: 'Аудио', type: 'audio' },
-      { title: 'Файл', type: 'file' },
+      { title: 'Изображение', type: 'image' },
+      { title: 'Другие файлы', type: 'file' },
     ];
     const position = { top: -160, left: 5 };
     const host = {
@@ -540,7 +540,7 @@ export default class Chat {
 
     if (type.match(/txt/) || type.match(/link/)) {
       const content = e.closest('.row').querySelector('.mess-user-body').textContent;
-      const blob = new Blob([content], { type: 'text/plain' });
+      const blob = new Blob([content], { type: 'text/plain;charset=UTF-8' });
       file = new File([blob], 'fileName.txt', { type: 'text/plain' });
       link.download = 'chaos.txt';
       link.href = URL.createObjectURL(file);
