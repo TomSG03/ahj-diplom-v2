@@ -43,7 +43,7 @@
 
    ![Микрофон](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/microfon.png)
 
-    после этого откроется панель управления записью и автоматически начнется запсь
+    После этого откроется панель управления записью и автоматически начнется запись.
 
    ![Панель управления записью](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/recPanel.png)
 
@@ -54,7 +54,10 @@
 
    ![Камера](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/Cam.png)
   
-    после этого откроется панель управления записью и автоматически начнется запсь
+    После этого откроется панель управления и поле показывающее изображение с камеры..
+    Запись начнется автоматически.
+
+   ![Камера](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/CamRec.png)
 
    ![Панель управления записью](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/recPanel.png)
 
