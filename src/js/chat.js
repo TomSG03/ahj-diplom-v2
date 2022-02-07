@@ -319,7 +319,7 @@ export default class Chat {
           this.tabTitle.textContent = `${this.tabTitle.textContent} Видео файлы`;
           break;
         default:
-          this.tabTitle.textContent = `${this.tabTitle.textContent} Остальные файлы`;
+          this.tabTitle.textContent = `${this.tabTitle.textContent} Другие файлы`;
           break;
       }
     }
