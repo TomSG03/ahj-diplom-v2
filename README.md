@@ -52,7 +52,7 @@
 
   ### Запись видео-сообщений начинается с клика на 'камеру'
 
-   ![Камера](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/cam.png)
+   ![Камера](https://github.com/TomSG03/ahj-diplom-v2/blob/main/imageMD/Cam.png)
   
     после этого откроется панель управления записью и автоматически начнется запсь
 
