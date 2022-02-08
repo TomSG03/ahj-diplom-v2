@@ -3,7 +3,7 @@
 ### [Gh-Pages](https://tomsg03.github.io/ahj-diplom-v2/)
 ### [Back-End](https://github.com/TomSG03/ahj-diplom-be)
 ### [Heroky](https://git.heroku.com/ahj-diplom-be.git)
-
+[![CircleCI](https://circleci.com/gh/TomSG03/ahj-diplom-v2/tree/main.svg?style=svg)](https://circleci.com/gh/TomSG03/ahj-diplom-v2/tree/main)
 ## Обязательные функции
 
 ###    1.  Сохранение в истории ссылок и текстовых сообщений
