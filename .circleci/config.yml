@@ -11,13 +11,13 @@ jobs:
       - checkout
       - node/install-packages:
           # If you are using yarn, change the line below from "npm" to "yarn"
-          pkg-manager: yarn
+          pkg-manager: npm
       - run:
           name: Run build
-          command: yarn build
+          command: npm run build
       - run:
           name: Run eslint
-          command: yarn lint
+          command: npm run lint
       # - run:
       #     name: Run test 
       #     command: yarn test
