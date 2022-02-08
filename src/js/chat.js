@@ -142,12 +142,10 @@ export default class Chat {
       if (e.reason) {
         this.gui.log(e);
       }
-      // this.mask.style.display = 'block';
     });
     this.link.ws.addEventListener('error', (e) => {
       this.wsStatusElmt.style.backgroundColor = '#68bbe4';
       this.wsStatus = 'error';
-      // this.showError();
       this.gui.log(`ws error: ${e}`);
     });
   }
